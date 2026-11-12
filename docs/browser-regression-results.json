@@ -1,0 +1,42 @@
+{
+  "fixturesOnly": true,
+  "checks": [
+    {
+      "name": "token refresh preserves same-user support draft",
+      "passed": true
+    },
+    {
+      "name": "token refresh survives a delayed older profile response",
+      "passed": true
+    },
+    {
+      "name": "token refresh rechecks role and clears cached administrative rows",
+      "passed": true
+    },
+    {
+      "name": "token refresh preserves password recovery mode",
+      "passed": true
+    },
+    {
+      "name": "session expiry independently hides cached private data",
+      "passed": true
+    },
+    {
+      "name": "reassignment scopes alerts and admin history to current person",
+      "passed": true
+    },
+    {
+      "name": "conversation paging creates a new conversation",
+      "passed": true
+    },
+    {
+      "name": "pending send cannot erase a newly edited draft",
+      "passed": true
+    },
+    {
+      "name": "native browser history preserves unsent drafts until confirmation",
+      "passed": false,
+      "error": "locator.waitFor: Timeout 3000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog') to be visible\u001b[22m\n"
+    }
+  ]
+}

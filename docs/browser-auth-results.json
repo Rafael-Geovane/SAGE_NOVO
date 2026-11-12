@@ -1,0 +1,13 @@
+{
+  "fixtureOnly": true,
+  "checks": [
+    "Caregiver sees only authorized fixtures and explicit stale/missing readings",
+    "Caregiver admin route denied",
+    "Support failure preserves draft and retry reuses conversation",
+    "Unsaved-message navigation uses accessible confirmation",
+    "Admin metrics, device dialog, validation focus and create flow",
+    "Mobile admin modal fits, keyboard Escape closes",
+    "Revoked access clears device and reading UI within refresh window",
+    "No runtime errors in authenticated fixture workflows"
+  ]
+}

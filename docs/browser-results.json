@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-30T17:22:21.777Z",
+  "checks": [
+    "Desktop landing rendered",
+    "Como funciona is public, linked in header/footer, has active navigation, page title and keyboard FAQ",
+    "How it works test link opens the existing SGE-001 simulator",
+    "Variant selection and cart persisted",
+    "Checkout leads to authentication; login availability matches configuration",
+    "Recovery form reachable",
+    "Protected route requires a configured authenticated account",
+    "404 has return navigation",
+    "Como funciona fits all four widths and closes the mobile menu after navigation",
+    "Mobile menu and layouts at 360/390/768/1440 px",
+    "Cart removal and empty state",
+    "Keyboard skip link and reduced-motion contract",
+    "No browser runtime errors"
+  ]
+}

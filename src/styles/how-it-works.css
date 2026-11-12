@@ -1,0 +1,306 @@
+.how-page .breadcrumbs {
+  padding-top: 40px;
+}
+.how-intro-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+.how-intro-copy {
+  padding-block: 24px;
+}
+.how-intro-copy h1 {
+  max-width: 680px;
+}
+.how-intro-copy h1 span {
+  color: var(--blue);
+}
+.how-intro-copy > p {
+  max-width: 560px;
+}
+.how-intro-copy .button-row {
+  flex-wrap: wrap;
+}
+.how-vest {
+  margin: 0;
+  padding: 28px;
+  background: var(--soft);
+  border-radius: var(--radius);
+}
+.how-vest-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  color: var(--blue);
+}
+.how-vest img {
+  width: 100%;
+  height: 320px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  margin-block: 12px;
+}
+.how-vest figcaption {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 350px;
+}
+.how-connection {
+  list-style: none;
+  padding: 32px 0;
+  margin: 48px 0 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-block: 1px solid var(--line);
+  gap: 24px;
+}
+.how-connection li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.how-connection li > svg:first-child {
+  width: 24px;
+  height: 24px;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+.how-connection strong,
+.how-connection span {
+  display: block;
+}
+.how-connection strong {
+  font-size: 15px;
+}
+.how-connection span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.how-flow-arrow {
+  color: var(--muted);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.how-steps {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 104px;
+  scroll-margin-top: 120px;
+}
+.how-section-intro h2 {
+  max-width: 380px;
+}
+.how-section-intro > p {
+  max-width: 400px;
+}
+.how-step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.how-step-list li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+.how-step-list li:first-child {
+  padding-top: 0;
+}
+.how-step-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.how-step-number {
+  color: var(--blue);
+  font-family: var(--font-data);
+  font-size: 14px;
+  border-top: 2px solid var(--blue);
+  padding-top: 10px;
+}
+.how-step-list h3 {
+  font-size: 24px;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+.how-step-list p {
+  font-size: 14px;
+  margin: 0;
+}
+.how-fall-section {
+  background: var(--ice);
+}
+.how-fall-heading {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 72px;
+  align-items: end;
+}
+.how-fall-heading h2 {
+  margin: 0;
+}
+.how-fall-heading > p {
+  margin: 0;
+  max-width: 360px;
+}
+.how-review-flow {
+  list-style: none;
+  padding: 0;
+  margin: 48px 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+}
+.how-review-flow li {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+.how-review-flow svg {
+  color: var(--blue);
+  margin-bottom: 20px;
+}
+.how-review-flow h3 {
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+.how-review-flow p {
+  font-size: 14px;
+  margin: 0;
+}
+.how-test-invite {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 32px;
+}
+.how-test-invite > svg {
+  flex-shrink: 0;
+  color: var(--blue);
+}
+.how-test-invite h3 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+.how-test-invite p {
+  font-size: 13px;
+  margin: 0;
+}
+.how-test-invite .button {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.how-faq {
+  gap: 104px;
+}
+.how-privacy-note {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  max-width: 350px;
+  margin-top: 28px;
+}
+.how-privacy-note svg {
+  color: var(--blue);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.how-privacy-note p {
+  font-size: 13px;
+  margin: 0;
+}
+.how-project-note {
+  border-top: 1px solid var(--line);
+  padding-block: 24px 48px;
+}
+.how-project-note p {
+  font-size: 12px;
+  max-width: 860px;
+  margin: 0;
+}
+@media (max-width: 1000px) {
+  .how-intro-grid {
+    gap: 40px;
+  }
+  .how-steps,
+  .how-faq {
+    gap: 48px;
+  }
+  .how-fall-heading {
+    gap: 40px;
+  }
+  .how-test-invite {
+    flex-wrap: wrap;
+  }
+  .how-test-invite .button {
+    margin-left: 48px;
+  }
+}
+@media (max-width: 700px) {
+  .how-page .breadcrumbs {
+    padding-top: 24px;
+    margin-bottom: 16px;
+  }
+  .how-intro-grid,
+  .how-steps,
+  .how-fall-heading {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .how-intro-copy {
+    padding-block: 8px 0;
+  }
+  .how-vest {
+    padding: 20px;
+  }
+  .how-vest img {
+    height: 240px;
+  }
+  .how-connection {
+    grid-template-columns: 1fr;
+    padding-block: 24px;
+    margin-top: 32px;
+    gap: 20px;
+  }
+  .how-flow-arrow {
+    transform: rotate(90deg);
+  }
+  .how-steps {
+    scroll-margin-top: 100px;
+  }
+  .how-step-list li {
+    gap: 16px;
+    grid-template-columns: 32px 1fr;
+  }
+  .how-step-list h3 {
+    font-size: 22px;
+  }
+  .how-review-flow {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-block: 32px;
+  }
+  .how-review-flow svg {
+    margin-bottom: 12px;
+  }
+  .how-test-invite {
+    gap: 16px;
+  }
+  .how-test-invite > div {
+    flex: 1;
+  }
+  .how-test-invite .button {
+    margin-left: 0;
+    width: 100%;
+  }
+  .how-faq {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

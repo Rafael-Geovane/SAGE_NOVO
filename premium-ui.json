@@ -1,0 +1,25 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["src"],
+  "locale": "pt-BR",
+  "canonicalMap": "UX-CONTRACT.md",
+  "requiredCapabilities": [
+    "Select/Listbox",
+    "Form",
+    "Scrollbar",
+    "Toast",
+    "CRUD"
+  ],
+  "ownership": { "Select/Listbox": "native" },
+  "requiredCommands": ["unit", "typecheck", "build", "format"],
+  "commands": {
+    "unit": "npm test",
+    "typecheck": "npm run typecheck",
+    "build": "npm run build",
+    "format": "npm run format:check"
+  },
+  "evidence": {
+    "crudFullFlow": "docs/verification.md",
+    "failurePaths": "docs/verification.md"
+  }
+}

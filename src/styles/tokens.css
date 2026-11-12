@@ -1,0 +1,20 @@
+:root {
+  --ink: #142536;
+  --blue: #096ca8;
+  --ice: #eaf4fa;
+  --paper: #ffffff;
+  --muted: #526475;
+  --warning: #9a5700;
+  --line: #dce5ec;
+  --soft: #f4f7fa;
+  --success: #146950;
+  --danger: #ac3030;
+  --font-display: "Segoe UI", sans-serif;
+  --font-body: system-ui, sans-serif;
+  --font-data: ui-monospace, monospace;
+  --radius: 16px;
+  --scroll-thumb: #90a6b7;
+  --scroll-track: #eef2f5;
+  --scroll-hover: #526475;
+  --scroll-active: #096ca8;
+}

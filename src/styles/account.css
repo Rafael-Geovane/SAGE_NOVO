@@ -1,0 +1,86 @@
+.account-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.8fr);
+  gap: 32px;
+  align-items: start;
+}
+.account-identity {
+  background: linear-gradient(150deg, #f1f8fc, #fff);
+  position: sticky;
+  top: 110px;
+}
+.account-avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  color: var(--blue);
+  background: var(--ice);
+  margin-bottom: 22px;
+}
+.account-identity h2 {
+  font-size: 25px;
+}
+.account-data {
+  margin: 24px 0;
+}
+.account-data > div {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+}
+.account-data dt {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.account-data dd {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.account-identity .button {
+  width: 100%;
+  text-align: center;
+}
+.account-people {
+  min-width: 0;
+}
+.account-people > p {
+  font-size: 14px;
+}
+.account-people .panel-heading svg {
+  color: var(--blue);
+  flex-shrink: 0;
+}
+.account-device-label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  background: var(--ice);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  font-size: 13px;
+}
+.account-device-label code {
+  font-weight: 700;
+  color: var(--blue);
+}
+.account-device-label span {
+  overflow-wrap: anywhere;
+}
+.account-person .panel {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+@media (max-width: 800px) {
+  .account-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .account-identity {
+    position: static;
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-30T17:08:29.238Z",
+  "checks": [
+    "Public SGE-001 test opens without pairing, token or login; manual reading works",
+    "Readings change on the real three-second timer and stop while paused",
+    "Simulated fall notification supports human review locally without Supabase writes",
+    "Test event, simulated fall, battery scenario and null readings work",
+    "Disconnect blocks readings; reconnect adds a new synthetic sample",
+    "Desktop/mobile at 360/390/768/1440: image renders, no document overflow, screenshots saved",
+    "Reset/reload clear synthetic state; no telemetry writes, persisted readings or runtime errors"
+  ],
+  "mutations": [],
+  "errors": []
+}

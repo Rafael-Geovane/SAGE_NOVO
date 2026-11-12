@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-10T18:48:13.065Z",
+  "checks": [
+    "Admin sees Adicionar colete, validates code, creates with code only and selects the vest",
+    "Adding the same printed code selects the existing vest without another insert",
+    "Mobile button/modal fit at 360px; Escape closes the modal",
+    "Elderly profile validates, preserves input on failure, saves and pre-fills existing person; site fall notification can be verified and discarded at 360px",
+    "Caregiver still needs valid activation proof; printed code alone grants no access",
+    "SGE-067 opens through a generic code field; delegated caregiver can create/edit the elder profile and persist random samples every three seconds with pause and visible provenance",
+    "Minha conta opens from the header; authorized elder edits persist and mobile has no overflow",
+    "Browser notification permission can be enabled; hidden control route sends stable readings and explicit fall RPCs",
+    "Sidebar navigates to reports and plans; Essential locks exports; Premium selection enables weekly demo analysis and CSV export; mobile fits"
+  ],
+  "errors": []
+}

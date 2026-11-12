@@ -1,0 +1,8 @@
+{
+  "fixturesOnly": true,
+  "checks": [
+    "Real hook subscribes with device filters, rejects foreign scopes and deduplicates delivery",
+    "Disconnected realtime reconciles one bounded history page through polling",
+    "Revoked assignment clears displayed person and history"
+  ]
+}
