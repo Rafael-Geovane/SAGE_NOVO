@@ -16,6 +16,14 @@ chamada `ingest`
 
 ## 1. Estado atual
 
+ESP demonstrativo SGE-004 (ID local 001): firmware Arduino em
+`firmware/sage_demo/`, GPIOs 25/26 para LEDs e 27 para contato com GND. O endpoint
+`esp-presence` e a migration `202611160001_esp_presence` foram publicados.
+Dispositivo SGE-004 criado com origem simulada e credencial individual no `.env`.
+Leituras dependem de contato fechado e sinal recente no servidor; o dashboard
+não fabrica amostras para esse dispositivo. Falta preencher o Wi-Fi no `.env`,
+preparar o header e gravar/testar no ESP físico. Consulte o README do firmware.
+
 Ativação NVIDIA concluída em 10/11/2026: chave e modelo publicados nos secrets
 do Supabase a partir do `.env`. Teste real do provedor com dados exclusivamente
 sintéticos retornou HTTP 200 e análise JSON válida. As referências abaixo à

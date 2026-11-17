@@ -9,6 +9,9 @@ export type Person = {
   contact_phone: string | null;
 };
 export type Device = {
+  requires_esp?: boolean;
+  esp_last_seen_at?: string | null;
+  esp_attached?: boolean;
   telemetry_source?: "device" | "simulated";
   device_profile_editable?: boolean;
   id: string;

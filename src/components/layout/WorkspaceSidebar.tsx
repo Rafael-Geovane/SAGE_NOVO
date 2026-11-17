@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Activity,
+  Box,
   FileBarChart2,
   Layers3,
   LifeBuoy,
@@ -17,6 +18,7 @@ export function WorkspaceSidebar({ children }: { children: ReactNode }) {
     { path: "/dashboard", label: "Acompanhamento", icon: Activity },
     { path: "/relatorios", label: "Relatórios", icon: FileBarChart2 },
     { path: "/planos", label: "Planos", icon: Layers3 },
+    { path: "/modelo", label: "Modelo 3D", icon: Box },
     { path: "/minha-conta", label: "Minha conta", icon: Settings },
     { path: "/suporte", label: "Suporte interno", icon: LifeBuoy },
     ...(a.profile?.role === "admin"

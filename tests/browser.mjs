@@ -14,7 +14,7 @@ try {
   });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:3000");
   await page
     .getByRole("heading", {
       name: "Mais presença. Mais cuidado. Mais liberdade.",
@@ -82,7 +82,7 @@ try {
     .getByRole("heading", { name: "Teste do colete SGE-001", exact: true })
     .waitFor();
   results.push("How it works test link opens the existing SGE-001 simulator");
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:3000");
   await page.getByRole("link", { name: /Conheça o Smart Vest/ }).click();
   await page.getByRole("heading", { name: "SAGE Smart Vest." }).waitFor();
   await page.getByRole("button", { name: "Branco", exact: true }).click();
@@ -117,12 +117,12 @@ try {
     .getByRole("heading", { name: "Vamos recuperar seu acesso." })
     .waitFor();
   results.push("Recovery form reachable");
-  await page.goto("http://127.0.0.1:5173/dashboard");
+  await page.goto("http://localhost:3000/dashboard");
   await page
     .getByText(unconfigured ? "Conecte sua conta SAGE" : "Entre para continuar")
     .waitFor();
   results.push("Protected route requires a configured authenticated account");
-  await page.goto("http://127.0.0.1:5173/does-not-exist");
+  await page.goto("http://localhost:3000/does-not-exist");
   await page
     .getByRole("heading", { name: "Esta página não está por aqui." })
     .waitFor();
@@ -138,7 +138,7 @@ try {
       "/admin",
       "/suporte",
     ]) {
-      await page.goto(`http://127.0.0.1:5173${route}`);
+      await page.goto(`http://localhost:3000${route}`);
       await page.locator("main").waitFor();
       assert.equal(
         await page.evaluate(
@@ -150,7 +150,7 @@ try {
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("http://127.0.0.1:5173/como-funciona");
+  await page.goto("http://localhost:3000/como-funciona");
   await page.screenshot({
     path: "docs/screenshots/how-it-works-mobile.png",
     fullPage: true,
@@ -171,7 +171,7 @@ try {
   results.push(
     "Como funciona fits all four widths and closes the mobile menu after navigation",
   );
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:3000");
   await page.getByRole("button", { name: "Abrir navegação" }).click();
   await page
     .getByRole("navigation", { name: "Navegação principal" })
@@ -183,13 +183,13 @@ try {
     fullPage: true,
   });
   results.push("Mobile menu and layouts at 360/390/768/1440 px");
-  await page.goto("http://127.0.0.1:5173/carrinho");
+  await page.goto("http://localhost:3000/carrinho");
   await page.getByRole("button", { name: "Remover referência Branco" }).click();
   await page
     .getByRole("heading", { name: "Nenhum colete selecionado" })
     .waitFor();
   results.push("Cart removal and empty state");
-  await page.goto("http://127.0.0.1:5173");
+  await page.goto("http://localhost:3000");
   await page.keyboard.press("Tab");
   assert.equal(
     await page.locator(":focus").textContent(),

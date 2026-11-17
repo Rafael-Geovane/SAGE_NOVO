@@ -44,6 +44,13 @@ components:
 
 # SAGE design context
 
+Product explorer (16/11/2026): public `/modelo` preserves SAGE blue/graphite
+and uses on-demand Three.js geometry. External and exploded views have native
+buttons, keyboard camera controls and an accessible component list. Only the
+confirmed academic prototype parts are represented; sensors, positions and
+enclosure are conceptual. Clearly labeled 2D reference images provide fallback
+when WebGL or the lazy 3D module fails. No automatic continuous animation.
+
 Workspace update (10/11/2026): authenticated routes share a blue/graphite sidebar
 with a horizontally scrollable navigation on mobile. Weekly reports group
 physical and simulated sources separately. Plan prices and Premium analysis

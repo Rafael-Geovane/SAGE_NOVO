@@ -19,6 +19,7 @@ import { scopeHistoryPage } from "../features/devices/realtime";
 import { ConnectDevice } from "../features/devices/ConnectDevice";
 import { ElderProfileDetails } from "../features/people/ElderProfileDetails";
 import { useRandomReadings } from "../features/devices/useRandomReadings";
+import { espPresence } from "../features/devices/espPresence";
 import type { DeviceConnection } from "../features/devices/managed";
 import {
   connectionState,
@@ -64,7 +65,8 @@ export default function Caregiver() {
   const q = useQuery({
     queryKey: ["devices", a.profile!.id, page],
     queryFn: ({ signal }) => listDevices(page, signal),
-    refetchInterval: 15000,
+    refetchInterval: (query) =>
+      query.state.data?.rows.some((d) => d.requires_esp) ? 2000 : 15000,
   });
   const device = q.data?.rows.find((d) => d.id === selected) ?? q.data?.rows[0];
   const randomReadings = useRandomReadings(device);
@@ -85,13 +87,17 @@ export default function Caregiver() {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
-  const state = connectionState(
-    device?.last_received_at ?? null,
-    now,
-    staleAfterSeconds,
-    offlineAfterSeconds,
-    device?.enabled,
-  );
+  const esp = espPresence(device, now);
+  const state =
+    device?.requires_esp && !esp.attached
+      ? "offline"
+      : connectionState(
+          device?.last_received_at ?? null,
+          now,
+          staleAfterSeconds,
+          offlineAfterSeconds,
+          device?.enabled,
+        );
   return (
     <div className="dashboard-shell">
       <WorkspaceHeader
@@ -114,9 +120,17 @@ export default function Caregiver() {
         </div>
         <div className="dashboard-overview-status">
           <div className="overview-status-line">
-            <span className="overview-status-dot" aria-hidden="true" />
+            <span
+              className="overview-status-dot"
+              data-state={state}
+              aria-hidden="true"
+            />
             <strong>
-              {device ? connectionLabels[state] : "Aguardando vínculo"}
+              {device
+                ? device.requires_esp
+                  ? esp.label
+                  : connectionLabels[state]
+                : "Aguardando vínculo"}
             </strong>
           </div>
           <span>
@@ -185,17 +199,19 @@ export default function Caregiver() {
                 <span className="device-card-top">
                   <code>{d.code}</code>
                   <span
-                    className={`device-card-signal ${connectionState(d.last_received_at, now, staleAfterSeconds, offlineAfterSeconds, d.enabled)}`}
+                    className={`device-card-signal ${d.requires_esp ? (espPresence(d, now).attached ? "online" : "offline") : connectionState(d.last_received_at, now, staleAfterSeconds, offlineAfterSeconds, d.enabled)}`}
                     aria-label={
-                      connectionLabels[
-                        connectionState(
-                          d.last_received_at,
-                          now,
-                          staleAfterSeconds,
-                          offlineAfterSeconds,
-                          d.enabled,
-                        )
-                      ]
+                      d.requires_esp
+                        ? espPresence(d, now).label
+                        : connectionLabels[
+                            connectionState(
+                              d.last_received_at,
+                              now,
+                              staleAfterSeconds,
+                              offlineAfterSeconds,
+                              d.enabled,
+                            )
+                          ]
                     }
                   />
                 </span>
@@ -205,19 +221,19 @@ export default function Caregiver() {
                 </p>
                 <span className="device-card-meta">
                   <span
-                    className={`badge ${connectionState(d.last_received_at, now, staleAfterSeconds, offlineAfterSeconds, d.enabled) !== "online" ? "badge-warning" : "badge-success"}`}
+                    className={`badge ${(d.requires_esp ? espPresence(d, now).attached : connectionState(d.last_received_at, now, staleAfterSeconds, offlineAfterSeconds, d.enabled) === "online") ? "badge-success" : "badge-warning"}`}
                   >
-                    {
-                      connectionLabels[
-                        connectionState(
-                          d.last_received_at,
-                          now,
-                          staleAfterSeconds,
-                          offlineAfterSeconds,
-                          d.enabled,
-                        )
-                      ]
-                    }
+                    {d.requires_esp
+                      ? espPresence(d, now).label
+                      : connectionLabels[
+                          connectionState(
+                            d.last_received_at,
+                            now,
+                            staleAfterSeconds,
+                            offlineAfterSeconds,
+                            d.enabled,
+                          )
+                        ]}
                   </span>
                   <small>
                     {d.telemetry_source === "simulated"
@@ -240,6 +256,17 @@ export default function Caregiver() {
           {device && (
             <>
               <ElderProfileDetails key={`profile:${scope}`} device={device} />
+              {device.requires_esp && (
+                <div className="connection-banner" role="status">
+                  <Signal size={19} />
+                  <span>
+                    <strong>{esp.label}.</strong> Último sinal do ESP:{" "}
+                    {dateTime(device.esp_last_seen_at ?? null)}. Os valores são
+                    fictícios e só são aceitos com o colete encaixado e um sinal
+                    recebido nos últimos 12 segundos.
+                  </span>
+                </div>
+              )}
               {(state !== "online" || channelState !== "connected") && (
                 <div className="connection-banner" role="status">
                   <WifiOff size={19} />
@@ -284,14 +311,16 @@ export default function Caregiver() {
                 >
                   <span>
                     <strong>Origem: dados simulados.</strong>{" "}
-                    {randomReadings.active
-                      ? "Novas amostras aleatórias a cada 3 segundos."
-                      : !randomReadings.visible
-                        ? "Atualização pausada enquanto a página está oculta."
-                        : "Atualização de dados aleatórios pausada."}{" "}
+                    {device.requires_esp
+                      ? "As amostras demonstrativas são enviadas pelo ESP após detectar o colete. "
+                      : randomReadings.active
+                        ? "Novas amostras aleatórias a cada 3 segundos."
+                        : !randomReadings.visible
+                          ? "Atualização pausada enquanto a página está oculta."
+                          : "Atualização de dados aleatórios pausada."}{" "}
                     Estes valores não são medições do idoso.
                   </span>
-                  {device.device_profile_editable && (
+                  {device.device_profile_editable && !device.requires_esp && (
                     <Button
                       variant="outline"
                       size="sm"

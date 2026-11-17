@@ -223,6 +223,54 @@ it("stops when disabled or its credential is revoked", async () => {
   await expect(emit()).rejects.toThrow();
   expect((await pg.query("select id from telemetry")).rows).toHaveLength(0);
 });
+it("requires a fresh attached ESP before any simulated telemetry is persisted", async () => {
+  await pg.query("update devices set requires_esp=true where id=$1", [
+    simulated.id,
+  ]);
+  await expect(emit()).rejects.toThrow();
+  const boot = randomUUID();
+  const presence = (sequence: number, attached: boolean) =>
+    pg.query<{ result: { status: number } }>(
+      "select record_esp_presence($1,$2,$3,$4,$5) result",
+      ["SGE-067", "a".repeat(64), boot, sequence, attached],
+    );
+  expect((await presence(1, false)).rows[0].result.status).toBe(200);
+  await expect(emit()).rejects.toThrow();
+  expect((await presence(2, true)).rows[0].result.status).toBe(200);
+  await emit();
+  expect((await pg.query("select id from telemetry")).rows).toHaveLength(1);
+  expect((await presence(1, false)).rows[0].result.status).toBe(409);
+  expect(
+    (
+      await pg.query<{ esp_attached: boolean }>(
+        "select esp_attached from devices where id=$1",
+        [simulated.id],
+      )
+    ).rows[0].esp_attached,
+  ).toBe(true);
+  await pg.query(
+    "update devices set esp_last_seen_at=clock_timestamp()-interval '13 seconds' where id=$1",
+    [simulated.id],
+  );
+  await expect(emit()).rejects.toThrow();
+  await presence(3, false);
+  await expect(emit()).rejects.toThrow();
+  await expect(
+    user(owner, "select record_esp_presence($1,$2,$3,$4,$5)", [
+      "SGE-067",
+      "a".repeat(64),
+      boot,
+      4,
+      true,
+    ]),
+  ).rejects.toThrow();
+  await expect(
+    user(owner, "update devices set esp_attached=true where id=$1", [
+      simulated.id,
+    ]),
+  ).rejects.toThrow();
+  expect((await pg.query("select id from telemetry")).rows).toHaveLength(1);
+});
 it("keeps demo readings stable and persists an explicit simulated fall exactly once", async () => {
   const saved = (await save()).rows[0].result as { assignment_id: string };
   simulated.assignment_id = saved.assignment_id;

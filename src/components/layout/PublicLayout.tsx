@@ -65,6 +65,13 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             <Link href="/suporte" onClick={() => setOpen(false)}>
               Suporte
             </Link>
+            <Link
+              href="/modelo"
+              aria-current={path === "/modelo" ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              Modelo 3D
+            </Link>
           </nav>
           <div className="nav-actions">
             <NotificationCenter />
@@ -128,6 +135,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
           <div>
             <strong>Conheça a SAGE</strong>
             <Link href="/loja">SAGE Smart Vest</Link>
+            <Link href="/modelo">Modelo 3D</Link>
             <Link href="/como-funciona">Como funciona</Link>
             <a href="/#privacidade">Privacidade no cuidado</a>
           </div>

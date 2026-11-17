@@ -1170,6 +1170,18 @@ textarea {
   background: var(--success);
   box-shadow: 0 0 0 5px #2b876520;
 }
+.overview-status-dot[data-state="offline"] {
+  background: var(--danger);
+  box-shadow: 0 0 0 5px #bd454520;
+}
+.overview-status-dot[data-state="stale"] {
+  background: var(--warning);
+  box-shadow: 0 0 0 5px #bd741820;
+}
+.overview-status-dot[data-state="no-data"] {
+  background: var(--muted);
+  box-shadow: 0 0 0 5px #7d929b20;
+}
 .overview-trust {
   display: flex;
   align-items: center;

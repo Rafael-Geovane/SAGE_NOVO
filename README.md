@@ -1,5 +1,14 @@
 # SAGE Smart Vest
 
+Firmware demonstrativo ESP32: [instruções, LEDs e contato do colete](firmware/sage_demo/README.md).
+Identificação `001` / `SGE-004`. Preencha o Wi-Fi no `.env`, execute
+`npm run esp:prepare` e grave `firmware/sage_demo/sage_demo.ino` pela Arduino IDE.
+
+Visualizador conceitual 3D: execute `npm run dev` e abra
+`http://localhost:3000/modelo`. Instruções, controles, referências e limites em
+[Modelo 3D](docs/modelo-3d.md). A porta 3000 é fixa; se estiver ocupada, o Vite
+informa o erro em vez de escolher outra porta.
+
 Configuração: use o único `.env` da raiz. Guia para importar na Vercel e
 publicar os secrets de IA: [ambiente e Vercel](docs/vercel-env.md).
 
@@ -26,9 +35,53 @@ Copy-Item .env.example .env
 npm run dev
 ```
 
-Acesse `http://127.0.0.1:5173`. Sem Supabase configurado, o site e a loja funcionam; entrada e rotas privadas explicam a configuração pendente. As rotas reais não usam dados de demonstração. O [teste local SGE-001](docs/vest-simulator.md) fica separado em `/teste-colete`, com dados explicitamente simulados, sem gravação no banco. Para produção: `npm run build`; publicar `dist` em hospedagem com fallback de rotas para `index.html`.
+Acesse `http://localhost:3000`. Sem Supabase configurado, o site e a loja funcionam; entrada e rotas privadas explicam a configuração pendente. As rotas reais não usam dados de demonstração. O [teste local SGE-001](docs/vest-simulator.md) fica separado em `/teste-colete`, com dados explicitamente simulados, sem gravação no banco. Para produção: `npm run build`; publicar `dist` em hospedagem com fallback de rotas para `index.html`.
 
 `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` devem apontar para seu projeto Supabase. A chave é a pública (publishable ou anon), nunca service_role. `VITE_STALE_AFTER_SECONDS=15` define recebimento recente; `VITE_ACTIVE_WINDOW_HOURS=24` define janela de atividade observada. Reinicie Vite após mudar essas variáveis.
+
+## Rotas do site
+
+Para abrir localmente, acrescente a rota a `http://localhost:3000`.
+
+| Rota             | Página                                                         | Acesso        |
+| ---------------- | -------------------------------------------------------------- | ------------- |
+| `/`              | Início                                                         | Público       |
+| `/loja`          | SAGE Smart Vest                                                | Público       |
+| `/modelo`        | Visualizador 3D conceitual                                     | Público       |
+| `/como-funciona` | Como funciona                                                  | Público       |
+| `/carrinho`      | Carrinho de intenção                                           | Público       |
+| `/auth`          | Login, cadastro e recuperação de acesso                        | Público       |
+| `/planos`        | Planos demonstrativos                                          | Público       |
+| `/teste-colete`  | Simulador local do SGE-001, sem gravação no banco              | Público       |
+| `/dashboard`     | Acompanhamento dos coletes                                     | Login         |
+| `/minha-conta`   | Dados da conta e edição autorizada dos dados do idoso          | Login         |
+| `/teste_colete`  | Controle dos dados simulados dos coletes autorizados           | Login         |
+| `/relatorios`    | Relatórios semanais; análise por IA exclusiva do plano Premium | Login         |
+| `/suporte`       | Suporte interno                                                | Login         |
+| `/admin`         | Administração                                                  | Administrador |
+
+`/teste-colete` e `/teste_colete` são páginas diferentes. Endereços não
+cadastrados exibem a página 404. As páginas privadas também verificam as
+permissões do usuário para acessar cada colete.
+
+### Publicar na Vercel
+
+Use a raiz deste repositório como Root Directory, preset **Vite**, comando
+`npm run build` e Output Directory `dist`. Configure as variáveis públicas
+`VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` antes do build, conforme
+o [guia de ambiente](docs/vercel-env.md). As credenciais do ESP32 e a chave
+NVIDIA não devem entrar no frontend.
+
+O arquivo `vercel.json` mantém o fallback da SPA para `index.html`, permitindo
+abrir diretamente ou atualizar rotas como `/dashboard` e `/modelo`. A porta
+3000 se aplica somente ao desenvolvimento local. Antes de publicar, execute:
+
+```powershell
+npm ci
+npm test
+npm run build
+npm run check:client
+```
 
 ## Configurar Supabase
 
@@ -36,7 +89,7 @@ Acesse `http://127.0.0.1:5173`. Sem Supabase configurado, o site e a loja funcio
 
 1. No projeto Supabase novo, abra **SQL Editor** e execute todo o arquivo [supabase/setup.sql](supabase/setup.sql). Ele reúne tabelas, funções, gatilhos, permissões, RLS, Realtime e perfis de contas existentes em uma transação.
 2. Em **Authentication → Providers**, habilite e-mail/senha. Configure a confirmação de e-mail conforme o ambiente.
-3. Em **Authentication → URL Configuration**, configure a Site URL (`http://127.0.0.1:5173` localmente) e permita `http://127.0.0.1:5173/auth` e `http://127.0.0.1:5173/auth?mode=update`. Na hospedagem, use as URLs HTTPS reais.
+3. Em **Authentication → URL Configuration**, configure a Site URL (`http://localhost:3000` localmente) e permita `http://localhost:3000/auth` e `http://localhost:3000/auth?mode=update`. Na hospedagem, use as URLs HTTPS reais.
 4. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` com a URL e a chave pública do mesmo projeto. Reinicie `npm run dev`.
 5. Crie sua conta em `/auth`, confirme o e-mail quando exigido e entre. Para liberar administração, siga “Primeiro administrador” abaixo.
 
@@ -141,6 +194,6 @@ npm run format:check
 
 `tests/database.test.ts` executa as migrations e as políticas em PostgreSQL embarcado (PGlite), com uma função Auth de teste que define a identidade. Isso valida SQL e RLS, mas não substitui testes do Auth, PostgREST, Realtime e Edge Runtime do seu Supabase.
 
-`node tests/browser.mjs` verifica o site público com o servidor em 5173. `node tests/browser-auth.mjs` usa outro servidor em 5174 e respostas HTTP simuladas explicitamente isoladas em testes. Para esse segundo servidor, configure somente no processo de teste `VITE_SUPABASE_URL=http://127.0.0.1:54399` e `VITE_SUPABASE_PUBLISHABLE_KEY=public-test-fixture-only`. Os scripts usam Chrome instalado no caminho do Windows indicado no código; ajuste em outros sistemas. Não utilize as variáveis fictícias na instância normal.
+`node tests/browser.mjs` verifica o site público com o servidor em 3000. `node tests/browser-auth.mjs` usa outro servidor em 5174 e respostas HTTP simuladas explicitamente isoladas em testes. Para esse segundo servidor, configure somente no processo de teste `VITE_SUPABASE_URL=http://127.0.0.1:54399` e `VITE_SUPABASE_PUBLISHABLE_KEY=public-test-fixture-only`. Os scripts usam Chrome instalado no caminho do Windows indicado no código; ajuste em outros sistemas. Não utilize as variáveis fictícias na instância normal.
 
 Veja [docs/verification.md](docs/verification.md) para resultados, limites e pendências. O mapa de recuperação e o inventário completo estão em `../docs/recovery-map.md` e `../docs/legacy-inventory.json`.

@@ -818,6 +818,48 @@ try {
   checks.push(
     "Sidebar navigates to reports and plans; Essential locks exports; Premium selection enables weekly demo analysis and CSV export; mobile fits",
   );
+  Object.assign(devices[0], {
+    requires_esp: true,
+    esp_last_seen_at: new Date().toISOString(),
+    esp_attached: false,
+  });
+  const samplesBeforeEsp = generated;
+  await customer.goto("http://127.0.0.1:5174/dashboard");
+  await customer
+    .getByText("ESP ligado · fora do colete", { exact: true })
+    .first()
+    .waitFor();
+  await customer.waitForTimeout(3400);
+  assert.equal(
+    generated,
+    samplesBeforeEsp,
+    "browser must not generate samples for ESP-dependent vests",
+  );
+  assert.equal(
+    await customer
+      .getByRole("button", { name: "Pausar dados aleatórios", exact: true })
+      .count(),
+    0,
+  );
+  Object.assign(devices[0], {
+    esp_attached: true,
+    esp_last_seen_at: new Date().toISOString(),
+  });
+  await customer
+    .getByText("ESP conectado ao colete", { exact: true })
+    .first()
+    .waitFor();
+  Object.assign(devices[0], {
+    esp_last_seen_at: new Date(Date.now() - 13000).toISOString(),
+  });
+  await customer
+    .getByText("ESP sem comunicação", { exact: true })
+    .first()
+    .waitFor();
+  assert.equal(generated, samplesBeforeEsp);
+  checks.push(
+    "ESP-dependent vests show attachment/timeout state and never auto-generate browser telemetry",
+  );
   assert.deepEqual(errors, []);
   await writeFile(
     "docs/browser-add-device-results.json",

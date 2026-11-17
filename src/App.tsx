@@ -18,6 +18,7 @@ import Account from "./pages/Account";
 import VestControls from "./pages/VestControls";
 import Plans from "./pages/Plans";
 import Reports from "./pages/Reports";
+import Model from "./pages/Model";
 class ErrorBoundary extends Component<
   { children: ReactNode },
   { failed: boolean }
@@ -44,6 +45,7 @@ function Routes() {
     const names: Record<string, string> = {
       "/": "Cuidado que respeita",
       "/loja": "Smart Vest",
+      "/modelo": "Modelo 3D",
       "/como-funciona": "Como funciona",
       "/carrinho": "Sua intenção",
       "/auth": "Sua conta",
@@ -63,6 +65,7 @@ function Routes() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/loja" component={Shop} />
+      <Route path="/modelo" component={Model} />
       <Route path="/como-funciona" component={HowItWorks} />
       <Route path="/carrinho" component={Cart} />
       <Route path="/auth" component={Auth} />

@@ -16,6 +16,7 @@ export function useRandomReadings(device: Device | undefined) {
   const [visible, setVisible] = useState(() => !document.hidden);
   const active =
     !!device?.enabled &&
+    !device.requires_esp &&
     device.telemetry_source === "simulated" &&
     device.device_profile_editable === true &&
     pausedScope !== scope &&

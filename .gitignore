@@ -8,3 +8,5 @@ dist/
 !.env.example
 supabase/functions/.env
 supabase/.temp/
+firmware/sage_demo/config.h
+firmware/entrega_privada/

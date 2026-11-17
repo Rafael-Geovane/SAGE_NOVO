@@ -22,7 +22,7 @@ try {
     )
       mutations.push(request.method());
   });
-  await page.goto("http://127.0.0.1:5173/teste-colete", {
+  await page.goto("http://localhost:3000/teste-colete", {
     waitUntil: "domcontentloaded",
   });
   await page

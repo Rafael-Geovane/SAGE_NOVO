@@ -16,6 +16,8 @@ site_url = "http://127.0.0.1:5173"
 additional_redirect_urls = ["http://127.0.0.1:5173/auth", "http://127.0.0.1:5173/auth?mode=update"]
 [functions.ingest]
 verify_jwt = false
+[functions.esp-presence]
+verify_jwt = false
 [functions.weekly-analysis]
 # JWT is validated by auth.getUser and RLS/RPC inside the function.
 verify_jwt = false
