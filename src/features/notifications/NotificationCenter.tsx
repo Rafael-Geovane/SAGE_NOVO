@@ -81,7 +81,7 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
   useEffect(() => {
     if (q.data && page > 0 && q.data.count <= page * 25) setPage(0);
   }, [q.data, page]);
-  const count = q.isError ? 0 : (q.data?.count ?? 0);
+  const count = q.data?.count ?? 0;
   return (
     <div className="notification-center">
       <Dialog
@@ -94,6 +94,7 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
         }}
         trigger={
           <Button
+            className={count ? "notification-urgent" : undefined}
             variant="outline"
             size="sm"
             aria-label={
@@ -158,8 +159,8 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
             ? `${count} eventos de possível queda aguardam verificação nas notificações.`
             : ""}
       </span>
-      {count > 0 && !open && (
-        <div className="notification-banner" role="status">
+      {count > 0 && (
+        <div className="notification-banner" role="alert">
           <Bell size={18} />
           <span>
             {count}{" "}
@@ -169,6 +170,9 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
             verificação.
           </span>
           <button onClick={() => setOpen(true)}>Ver notificações</button>
+          <small>
+            O aviso permanece até registrar a avaliação do cuidador.
+          </small>
         </div>
       )}
     </div>

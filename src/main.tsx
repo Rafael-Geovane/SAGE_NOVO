@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import "./styles/app.css";
+import "./styles/mobile.css";
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 10_000 } },
 });

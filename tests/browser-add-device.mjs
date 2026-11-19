@@ -468,7 +468,7 @@ try {
     .click();
   await inbox.getByText("Em verificação", { exact: true }).waitFor();
   await inbox
-    .getByRole("button", { name: "Descartar alerta", exact: true })
+    .getByRole("button", { name: "Está tudo bem / descartar", exact: true })
     .click();
   const review = admin.getByRole("dialog", {
     name: "Descartar alerta",
@@ -714,6 +714,24 @@ try {
     .getByRole("button", { name: "Simular sensor sem leitura", exact: true })
     .click();
   await extraRequest;
+  const batteryButton = customer.getByRole("button", {
+    name: "Simular bateria em 15%",
+    exact: true,
+  });
+  await batteryButton.click();
+  assert.equal(await batteryButton.getAttribute("aria-pressed"), "true");
+  await customer.waitForRequest(
+    (request) =>
+      request.url().endsWith("/rpc/emit_simulated_reading") &&
+      request.postDataJSON()?.p_scenario === "battery",
+  );
+  await customer.waitForRequest(
+    (request) =>
+      request.url().endsWith("/rpc/emit_simulated_reading") &&
+      request.postDataJSON()?.p_scenario === "battery",
+  );
+  await batteryButton.click();
+  assert.equal(await batteryButton.getAttribute("aria-pressed"), "false");
   await customer
     .getByText("Leitura enviada ao banco. Confira o dashboard.", {
       exact: true,

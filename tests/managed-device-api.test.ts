@@ -66,6 +66,7 @@ describe("managed vest RPC boundaries", () => {
       p_device_id: device,
       p_expected_assignment_id: assignment,
       p_message_id: message,
+      p_scenario: "normal",
     });
     expect(f.abort).toHaveBeenCalledWith(controller.signal);
   });

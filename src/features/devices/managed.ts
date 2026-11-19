@@ -2,6 +2,7 @@ import { z } from "zod";
 import { db } from "../../lib/supabase";
 import { pairingInput } from "./pairing";
 import type { Scenario } from "./scenarios";
+import { activeScenario } from "./activeScenario";
 export type DeviceConnection = {
   deviceId: string;
   page: number;
@@ -44,7 +45,7 @@ export async function emitSimulatedReading(
     p_device_id: deviceId,
     p_expected_assignment_id: assignmentId,
     p_message_id: messageId,
-    ...(scenario ? { p_scenario: scenario } : {}),
+    p_scenario: scenario ?? activeScenario(deviceId, assignmentId),
   });
   if (signal) q = q.abortSignal(signal);
   const { data, error } = await q;

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
@@ -9,6 +9,10 @@ import { listDevices, type Device } from "../features/devices/api";
 import { Button } from "../components/ui/Button";
 import { State } from "../components/ui/State";
 import { scenarios, type Scenario } from "../features/devices/scenarios";
+import {
+  activeScenario,
+  saveScenario,
+} from "../features/devices/activeScenario";
 export default function VestControls() {
   const cache = useQueryClient();
   const [code, setCode] = useState("SGE-067");
@@ -18,6 +22,47 @@ export default function VestControls() {
   const [error, setError] = useState("");
   const pending = useRef<{ id: string; scenario: Scenario } | null>(null);
   const lock = useRef(false);
+  const [selectedScenario, setSelectedScenario] = useState<Scenario>("normal");
+  useEffect(() => {
+    if (!device) return;
+    const sync = () =>
+      setSelectedScenario(activeScenario(device.id, device.assignment_id));
+    sync();
+    window.addEventListener("storage", sync);
+    const timer = window.setInterval(() => {
+      if (
+        !document.hidden &&
+        !pending.current &&
+        !lock.current &&
+        !device.requires_esp
+      )
+        void send(activeScenario(device.id, device.assignment_id));
+    }, 3000);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("storage", sync);
+    };
+  }, [device]);
+  async function choose(scenario: Scenario) {
+    if (!device) return;
+    if (scenario === "fall" || scenario === "device-test") {
+      await send(scenario);
+      return;
+    }
+    const next =
+      selectedScenario === scenario || scenario === "recovery"
+        ? "normal"
+        : scenario;
+    try {
+      saveScenario(device.id, device.assignment_id, next);
+      setSelectedScenario(next);
+      await send(next);
+    } catch {
+      setError(
+        "Não foi possível manter o cenário neste navegador. Habilite o armazenamento local.",
+      );
+    }
+  }
   async function connect() {
     if (lock.current) return;
     lock.current = true;
@@ -85,8 +130,9 @@ export default function VestControls() {
       <span className="eyebrow">CONTROLE DE DEMONSTRAÇÃO</span>
       <h1>Teste do colete</h1>
       <p>
-        Abra o acompanhamento em outra aba. Cada clique envia uma amostra
-        simulada ao colete autorizado e atualiza seu histórico.
+        Abra o acompanhamento em outra aba. Selecione um cenário para mantê-lo
+        ativo nas leituras a cada três segundos. Clique novamente para
+        desmarcar.
       </p>
       <section className="panel">
         <form
@@ -114,9 +160,10 @@ export default function VestControls() {
               entre 97 e 99% e bateria em 85%. Valores demonstrativos.
             </p>
             <p className="status-note">
-              Os cenários alteram apenas os campos descritos. Somente “possível
-              queda” cria um aviso no sino. Restaurar uma leitura estável não
-              encerra avaliações de queda pendentes.
+              Um cenário contínuo fica ativo por vez neste navegador, inclusive
+              após atualizar a página. Queda e evento de teste são envios
+              únicos. Somente “possível queda” cria um aviso no sino. Restaurar
+              uma leitura estável não encerra avaliações de queda pendentes.
             </p>
             <div className="scenario-grid">
               {pending.current ? (
@@ -132,8 +179,18 @@ export default function VestControls() {
                     <div key={scenario.id} className="scenario-card">
                       <Button
                         disabled={busy}
-                        variant="outline"
-                        onClick={() => void send(scenario.id)}
+                        aria-pressed={
+                          scenario.id === "fall" ||
+                          scenario.id === "device-test"
+                            ? undefined
+                            : selectedScenario === scenario.id
+                        }
+                        variant={
+                          selectedScenario === scenario.id
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => void choose(scenario.id)}
                       >
                         {scenario.label}
                       </Button>
@@ -150,9 +207,10 @@ export default function VestControls() {
         {message && <State title={message} tone="success" />}
       </section>
       <p>
-        Para acompanhar somente os cliques, pause “dados aleatórios” no
-        dashboard. A atualização entre abas usa Realtime; se a conexão cair, a
-        consulta periódica pode levar até 15 segundos.
+        A seleção também é aplicada ao gerador do dashboard nas abas deste
+        navegador. Coletes vinculados ao ESP continuam exigindo conexão física.
+        A atualização entre abas usa Realtime; se a conexão cair, a consulta
+        periódica pode levar até 15 segundos.
       </p>
       <Link href="/dashboard" className="text-link">
         Abrir acompanhamento

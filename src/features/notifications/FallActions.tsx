@@ -78,7 +78,7 @@ export function FallActions({
             disabled={busy}
             onClick={() => setReview("dismissed")}
           >
-            Descartar alerta
+            Está tudo bem / descartar
           </Button>
         </>
       )}
