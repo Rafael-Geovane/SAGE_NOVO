@@ -718,6 +718,8 @@ try {
     name: "Simular bateria em 15%",
     exact: true,
   });
+  const resume = customer.getByRole("button", { name: "Retomar envios automáticos", exact: true });
+  if (await resume.isVisible()) await resume.click();
   await batteryButton.click();
   assert.equal(await batteryButton.getAttribute("aria-pressed"), "true");
   await customer.waitForRequest(

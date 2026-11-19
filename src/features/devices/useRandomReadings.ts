@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/AuthProvider";
 import type { Device } from "./api";
 import { emitSimulatedReading } from "./managed";
+import { simulationPaused, pauseSimulation } from "./activeScenario";
 export function useRandomReadings(device: Device | undefined) {
   const a = useAuth(),
     cache = useQueryClient();
@@ -11,15 +12,28 @@ export function useRandomReadings(device: Device | undefined) {
     device?.id,
     device?.assignment_id,
   ]);
-  const [pausedScope, setPausedScope] = useState(""),
-    [failure, setFailure] = useState({ scope: "", message: "" });
+  const [failure, setFailure] = useState({ scope: "", message: "" });
   const [visible, setVisible] = useState(() => !document.hidden);
+  const [sharedPaused, setSharedPaused] = useState(false);
+  useEffect(() => {
+    const sync = () =>
+      setSharedPaused(
+        device ? simulationPaused(device.id, device.assignment_id) : false,
+      );
+    sync();
+    window.addEventListener("storage", sync);
+    window.addEventListener("sage-simulation", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("sage-simulation", sync);
+    };
+  }, [device?.id, device?.assignment_id]);
   const active =
     !!device?.enabled &&
+    !sharedPaused &&
     !device.requires_esp &&
     device.telemetry_source === "simulated" &&
     device.device_profile_editable === true &&
-    pausedScope !== scope &&
     visible &&
     !(failure.scope === scope && failure.message);
   useEffect(() => {
@@ -69,10 +83,10 @@ export function useRandomReadings(device: Device | undefined) {
     visible,
     error: failure.scope === scope ? failure.message : "",
     toggle: () => {
+      if (device) pauseSimulation(device.id, device.assignment_id, active);
       if (failure.scope === scope && failure.message) {
         setFailure({ scope: "", message: "" });
-        setPausedScope("");
-      } else setPausedScope(active ? scope : "");
+      }
     },
   };
 }

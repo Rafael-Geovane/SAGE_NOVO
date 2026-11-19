@@ -35,7 +35,10 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
     let active = true;
     const refresh = () => {
       if (active)
-        void cache.invalidateQueries({ queryKey: ["notifications", userId] });
+        void cache.invalidateQueries(
+          { queryKey: ["notifications", userId] },
+          { cancelRefetch: false },
+        );
     };
     // Discard stale previews immediately on permission/device changes; never
     // render a realtime payload directly without the SELECT policy.
@@ -45,7 +48,7 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
           { queryKey: ["notifications", userId] },
           { revert: false },
         );
-        cache.resetQueries({ queryKey: ["notifications", userId] });
+        void cache.invalidateQueries({ queryKey: ["notifications", userId] });
       }
     };
     const channel = client
@@ -58,7 +61,7 @@ function AuthenticatedCenter({ userId }: { userId: string }) {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "devices" },
-        reauthorize,
+        refresh,
       )
       .on(
         "postgres_changes",

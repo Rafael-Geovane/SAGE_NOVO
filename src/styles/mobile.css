@@ -1,4 +1,23 @@
 /* Small screens are the baseline; widen layouts progressively. */
+.metric-assessment {
+  display: block;
+  width: fit-content;
+  padding: 5px 9px;
+  margin-block: 10px;
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.metric-assessment[data-tone="normal"] {
+  background: #e6f4ee;
+  color: #146950;
+}
+.metric-assessment[data-tone="warning"] {
+  background: #fff0e3;
+  color: #9a3900;
+}
 input,
 select,
 textarea {

@@ -12,12 +12,15 @@ import { scenarios, type Scenario } from "../features/devices/scenarios";
 import {
   activeScenario,
   saveScenario,
+  simulationPaused,
+  pauseSimulation,
 } from "../features/devices/activeScenario";
 export default function VestControls() {
   const cache = useQueryClient();
   const [code, setCode] = useState("SGE-067");
   const [device, setDevice] = useState<Device>();
   const [busy, setBusy] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const pending = useRef<{ id: string; scenario: Scenario } | null>(null);
@@ -25,24 +28,27 @@ export default function VestControls() {
   const [selectedScenario, setSelectedScenario] = useState<Scenario>("normal");
   useEffect(() => {
     if (!device) return;
-    const sync = () =>
+    const sync = () => {
       setSelectedScenario(activeScenario(device.id, device.assignment_id));
+      setPaused(simulationPaused(device.id, device.assignment_id));
+    };
     sync();
     window.addEventListener("storage", sync);
     const timer = window.setInterval(() => {
       if (
         !document.hidden &&
+        !paused &&
         !pending.current &&
         !lock.current &&
         !device.requires_esp
       )
-        void send(activeScenario(device.id, device.assignment_id));
+        void send(activeScenario(device.id, device.assignment_id), true);
     }, 3000);
     return () => {
       clearInterval(timer);
       window.removeEventListener("storage", sync);
     };
-  }, [device]);
+  }, [device, paused]);
   async function choose(scenario: Scenario) {
     if (!device) return;
     if (scenario === "fall" || scenario === "device-test") {
@@ -91,10 +97,10 @@ export default function VestControls() {
       setBusy(false);
     }
   }
-  async function send(scenario: Scenario) {
+  async function send(scenario: Scenario, background = false) {
     if (!device || lock.current) return;
     lock.current = true;
-    setBusy(true);
+    if (!background) setBusy(true);
     setError("");
     setMessage("");
     const request = pending.current ?? { id: crypto.randomUUID(), scenario };
@@ -108,9 +114,10 @@ export default function VestControls() {
         request.scenario,
       );
       pending.current = null;
-      await cache.invalidateQueries({ queryKey: ["devices"] });
-      await cache.invalidateQueries({ queryKey: ["readings"] });
-      await cache.invalidateQueries({ queryKey: ["notifications"] });
+      void cache.invalidateQueries({ queryKey: ["devices"] });
+      void cache.invalidateQueries({ queryKey: ["readings"] });
+      if (request.scenario === "fall")
+        void cache.invalidateQueries({ queryKey: ["notifications"] });
       setMessage(
         request.scenario === "fall"
           ? "Possível queda simulada enviada. Confira o sino e o dashboard."
@@ -154,6 +161,17 @@ export default function VestControls() {
         </form>
         {device && (
           <>
+            <Button
+              variant="outline"
+              onClick={() => {
+                pauseSimulation(device.id, device.assignment_id, !paused);
+                setPaused(!paused);
+              }}
+            >
+              {paused
+                ? "Retomar envios automáticos"
+                : "Pausar envios automáticos"}
+            </Button>
             <h2>{device.code}</h2>
             <p>
               Temperatura fixa em 36,5 °C, batimentos entre 70 e 76 bpm, SpO₂
@@ -166,7 +184,7 @@ export default function VestControls() {
               uma leitura estável não encerra avaliações de queda pendentes.
             </p>
             <div className="scenario-grid">
-              {pending.current ? (
+              {pending.current && error ? (
                 <Button
                   disabled={busy}
                   onClick={() => void send(pending.current!.scenario)}

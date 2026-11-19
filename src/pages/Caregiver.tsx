@@ -34,9 +34,10 @@ import { State } from "../components/ui/State";
 import { Button } from "../components/ui/Button";
 import { Pagination } from "../components/ui/Pagination";
 import { Alerts } from "../features/alerts/Alerts";
+import { metricStatus } from "../domain/metricStatus";
 const metrics = [
   ["heart_rate_bpm", "Batimentos", "bpm"],
-  ["spo2_percent", "SpO₂", "%"],
+  ["spo2_percent", "Oxigênio no sangue", "%"],
   ["temperature_c", "Temperatura", "°C"],
   ["battery_percent", "Bateria", "%"],
 ];
@@ -341,6 +342,11 @@ export default function Caregiver() {
               <div className="metric-grid">
                 {metrics.map(([key, label, unit]) => {
                   const value = device.latest_metrics?.[key];
+                  const assessment = metricStatus(
+                    key,
+                    value,
+                    state === "online",
+                  );
                   const MetricIcon =
                     key === "heart_rate_bpm"
                       ? HeartPulse
@@ -362,6 +368,13 @@ export default function Caregiver() {
                             }).format(value)
                           : "—"}
                       </strong>
+                      <span
+                        className="metric-assessment"
+                        data-tone={assessment.tone}
+                      >
+                        {assessment.label}
+                      </span>
+                      <small>{assessment.detail}</small>
                       {typeof value === "number" ? (
                         <small>
                           {unit} ·{" "}
@@ -377,8 +390,10 @@ export default function Caregiver() {
                 })}
               </div>
               <p className="status-note">
-                Campos previstos na integração; sua presença depende dos
-                sensores e do firmware. Leituras não constituem diagnóstico.
+                Faixas gerais para adultos em repouso, não metas individuais.
+                Temperatura no tecido ou na pele não equivale à temperatura
+                corporal. Campos previstos na integração; sua presença depende
+                dos sensores e do firmware. Leituras não constituem diagnóstico.
                 Atualização considerada recente por até {staleAfterSeconds}{" "}
                 segundos.
               </p>
