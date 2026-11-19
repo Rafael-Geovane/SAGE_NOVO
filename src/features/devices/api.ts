@@ -2,6 +2,7 @@ import { db } from "../../lib/supabase";
 import { historyWindow, type HistoryRange } from "./realtime";
 export const PAGE_SIZE = 25;
 export type Person = {
+  care_settings?: import("../people/careSettings").CareSettings | null;
   id: string;
   display_name: string;
   consent_recorded_at: string | null;
@@ -57,7 +58,7 @@ export async function listDevices(page = 0, signal?: AbortSignal) {
   let q = db()
     .from("devices")
     .select(
-      "*,device_profile_editable,people(id,display_name,consent_recorded_at,contact_name,contact_phone)",
+      "*,device_profile_editable,people(id,display_name,consent_recorded_at,contact_name,contact_phone,care_settings)",
       { count: "exact" },
     )
     .order("code")

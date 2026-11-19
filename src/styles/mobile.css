@@ -1,4 +1,31 @@
 /* Small screens are the baseline; widen layouts progressively. */
+.care-required {
+  margin-block: 24px;
+  padding: 20px;
+  border: 2px solid var(--blue);
+  border-radius: 12px;
+}
+.care-required fieldset,
+form fieldset:has(.care-range-fields) {
+  min-width: 0;
+  margin-block: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+}
+.care-required label,
+fieldset label:has(input[type="number"]),
+fieldset label:has(input[type="date"]),
+fieldset label:has(textarea) {
+  display: grid;
+  gap: 8px;
+  margin-block: 14px;
+}
+.care-range-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 16px;
+}
 .metric-assessment {
   display: block;
   width: fit-content;

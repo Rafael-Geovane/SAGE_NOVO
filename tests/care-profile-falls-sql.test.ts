@@ -269,3 +269,41 @@ it("preserves consent author/date and existing assignment when editing the same 
     ).rows[0].assignment_id,
   ).toBe(first.assignment_id);
 });
+
+it("persists individual care atomically and refuses unreferenced ranges and unauthorized edits", async () => {
+  const care = {
+    birth_date: "1940-01-01",
+    weight_kg: 70,
+    height_cm: 170,
+    medications: "Nenhum informado",
+    professional_reference: "Orientacao ficticia",
+    heart_rate_bpm: { min: 60, max: 100 },
+    spo2_percent: null,
+    temperature_c: null,
+  };
+  const call = (value: unknown, user = admin) =>
+    asUser(user, "select configure_elder_care($1,$2,$3::jsonb)", [
+      device.id,
+      device.assignment_id,
+      JSON.stringify({ ...data, care_settings: value }),
+    ]);
+  await expect(call(care, outsider)).rejects.toThrow();
+  await expect(call({ ...care, professional_reference: "" })).rejects.toThrow();
+  await call(care);
+  const result = await pg.query<{ care_settings: typeof care }>(
+    "select care_settings from people where id=(select person_id from devices where id=$1)",
+    [device.id],
+  );
+  expect(result.rows[0].care_settings.weight_kg).toBe(70);
+  await expect(
+    call({ ...care, heart_rate_bpm: { min: 110, max: 60 } }),
+  ).rejects.toThrow();
+  expect(
+    (
+      await pg.query<{ care_settings: typeof care }>(
+        "select care_settings from people where id=(select person_id from devices where id=$1)",
+        [device.id],
+      )
+    ).rows[0].care_settings.heart_rate_bpm.min,
+  ).toBe(60);
+});

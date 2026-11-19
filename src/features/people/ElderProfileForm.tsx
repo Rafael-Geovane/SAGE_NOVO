@@ -4,6 +4,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { Button } from "../../components/ui/Button";
 import { Field, TextAreaField, focusFirst } from "../../components/ui/Field";
 import { State } from "../../components/ui/State";
+import { CareFields, emptyCare } from "./CareFields";
 import {
   loadProfileDevice,
   profileInput,
@@ -57,6 +58,7 @@ function ProfileFields({
   const cache = useQueryClient(),
     p = device.people;
   const [values, setValues] = useState({
+    care_settings: p?.care_settings ?? emptyCare,
     display_name: p?.display_name ?? "",
     address: p?.address ?? "",
     allergy_status: p?.allergy_status ?? "unknown",
@@ -82,6 +84,9 @@ function ProfileFields({
         next[String(issue.path[0])] ??= issue.message;
     if (!p?.consent_recorded_at && !values.consent_note.trim())
       next.consent_note = "Informe como a autorização foi obtida.";
+    if (!values.health_conditions.trim())
+      next.health_conditions =
+        "Informe as condições ou escreva Nenhuma informada / Desconhecidas.";
     setErrors(next);
     setFailure("");
     if (Object.keys(next).length) {
@@ -109,8 +114,9 @@ function ProfileFields({
   return (
     <form noValidate onSubmit={submit}>
       <p className="status-note">
-        Informe somente dados autorizados pela pessoa ou responsável. Campos
-        opcionais podem ficar em branco.
+        Informe somente dados autorizados. Nome, data de nascimento, peso,
+        altura, medicamentos, condições informadas e confirmação de autorização
+        são obrigatórios. Endereço e contato são opcionais.
       </p>
       <Field
         label="Nome do idoso"
@@ -123,6 +129,18 @@ function ProfileFields({
         error={errors.display_name}
         autoComplete="off"
       />
+      <CareFields
+        value={values.care_settings}
+        disabled={saving}
+        onChange={(care_settings) =>
+          setValues((v) => ({ ...v, care_settings }))
+        }
+      />
+      {errors.care_settings && (
+        <p role="alert" className="error-text">
+          Configuração do idoso: {errors.care_settings}
+        </p>
+      )}
       <TextAreaField
         label="Endereço (opcional)"
         name="address"
@@ -165,7 +183,7 @@ function ProfileFields({
         />
       )}
       <TextAreaField
-        label="Doenças e condições informadas (opcional)"
+        label="Doenças e condições informadas (obrigatório)"
         name="health_conditions"
         value={values.health_conditions}
         maxLength={3000}

@@ -37,7 +37,8 @@ export function ElderProfileDetails({ device }: { device: Device }) {
       <div className="panel-heading">
         <h2>Dados do idoso</h2>
         {(a.profile?.role === "admin" || q.data?.can_manage_profile) &&
-          !q.isError && (
+          !q.isError &&
+          !!p?.care_settings && (
             <Dialog
               title="Dados do idoso"
               description="Atualize o cadastro autorizado da pessoa acompanhada."
@@ -111,6 +112,39 @@ export function ElderProfileDetails({ device }: { device: Device }) {
         Dados informados pela pessoa ou responsável. Acesso restrito às pessoas
         autorizadas.
       </p>
+      {!q.isPending && !q.isError && !p?.care_settings && (
+        <div className="care-required">
+          <h3>Configuração obrigatória pendente</h3>
+          <p>
+            Complete os dados antes de interpretar os indicadores. Os alertas de
+            queda continuam disponíveis.
+          </p>
+          {a.profile?.role === "admin" || q.data?.can_manage_profile ? (
+            <ElderProfileForm
+              deviceId={device.id}
+              setBusy={setBusy}
+              onSaved={async () => {
+                await q.refetch();
+              }}
+            />
+          ) : (
+            <p>
+              Solicite ao responsável autorizado a conclusão deste cadastro.
+            </p>
+          )}
+        </div>
+      )}
+      {p?.care_settings && (
+        <p>
+          Idade:{" "}
+          {Math.floor(
+            (Date.now() - Date.parse(p.care_settings.birth_date)) / 31557600000,
+          )}{" "}
+          anos · Peso: {p.care_settings.weight_kg} kg · Altura:{" "}
+          {p.care_settings.height_cm} cm · Medicamentos:{" "}
+          {p.care_settings.medications}
+        </p>
+      )}
     </section>
   );
 }

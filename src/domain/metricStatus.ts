@@ -1,7 +1,12 @@
 // General resting-adult references, not individualized clinical thresholds.
 // https://medlineplus.gov/ency/article/002341.htm
 // https://www.ncbi.nlm.nih.gov/sites/books/NBK553213/
-export function metricStatus(key: string, value: unknown, fresh: boolean) {
+export function metricStatus(
+  key: string,
+  value: unknown,
+  fresh: boolean,
+  care?: import("../features/people/careSettings").CareSettings | null,
+) {
   if (typeof value !== "number" || !Number.isFinite(value))
     return {
       label: "Sem leitura",
@@ -20,12 +25,21 @@ export function metricStatus(key: string, value: unknown, fresh: boolean) {
       tone: value <= 20 ? "warning" : "normal",
       detail: value <= 20 ? "Recarregue o colete" : "Nível de carga do colete",
     };
-  const range =
-    key === "heart_rate_bpm"
-      ? [60, 100]
-      : key === "spo2_percent"
-        ? [95, 100]
-        : [36.5, 37.3];
+  const configured =
+    care &&
+    (key === "heart_rate_bpm" ||
+      key === "spo2_percent" ||
+      key === "temperature_c")
+      ? care[key]
+      : null;
+  if (!configured)
+    return {
+      label: "Sem faixa individual",
+      tone: "muted",
+      detail:
+        "Configure a faixa orientada por profissional no cadastro do idoso",
+    };
+  const range = [configured.min, configured.max];
   const invalid = key === "spo2_percent" && (value < 0 || value > 100);
   return {
     label: invalid
@@ -34,14 +48,9 @@ export function metricStatus(key: string, value: unknown, fresh: boolean) {
         ? "Abaixo da referência"
         : value > range[1]
           ? "Acima da referência"
-          : "Normal na referência",
+          : "Dentro da faixa individual",
     tone:
       invalid || value < range[0] || value > range[1] ? "warning" : "normal",
-    detail:
-      key === "temperature_c"
-        ? "Referência corporal: 36,5–37,3 °C; depende do local de medição"
-        : key === "heart_rate_bpm"
-          ? "Referência em repouso: 60–100 bpm"
-          : "Estimativa de oxigenação · referência: 95–100%",
+    detail: `Faixa individual: ${configured.min}–${configured.max}. Orientação: ${care!.professional_reference}`,
   };
 }

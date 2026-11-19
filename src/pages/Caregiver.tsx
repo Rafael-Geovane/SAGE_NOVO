@@ -346,6 +346,7 @@ export default function Caregiver() {
                     key,
                     value,
                     state === "online",
+                    device.people?.care_settings,
                   );
                   const MetricIcon =
                     key === "heart_rate_bpm"

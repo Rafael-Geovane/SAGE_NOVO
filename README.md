@@ -84,6 +84,18 @@ npm run build
 npm run check:client
 ```
 
+## Cadastro e faixas individuais
+
+O cadastro do idoso requer data de nascimento, peso, altura, medicamentos,
+condições informadas e autorização. Registre explicitamente quando não há
+medicamentos ou condições conhecidos. Perfis anteriores aparecem como pendentes
+até a revisão; alertas de queda continuam acessíveis durante o preenchimento.
+As faixas de batimentos, oxigenação e temperatura são opcionais e só devem ser
+transcritas de orientação profissional, com referência registrada. Doença,
+idade e peso não calculam metas automaticamente. Sem faixa cadastrada, o
+dashboard mostra “Sem faixa individual”. Isso compara registros; não diagnostica.
+Migração: `202611190001_individual_care.sql` (já aplicada ao projeto Sage).
+
 ## Pagamento demonstrativo
 
 A rota pública `/pagamento` simula Pix e cartão fictício, com aprovação ou

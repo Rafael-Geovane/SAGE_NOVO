@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { db } from "../../lib/supabase";
+import { careSettingsSchema, type CareSettings } from "./careSettings";
 const optionalText = (max: number) =>
   z
     .string()
@@ -9,6 +10,7 @@ const optionalText = (max: number) =>
     .transform((v) => v || null);
 export const profileInput = z
   .object({
+    care_settings: careSettingsSchema.optional(),
     display_name: z.string().trim().min(1, "Informe o nome do idoso.").max(120),
     address: optionalText(1000),
     allergy_status: z.enum(["unknown", "none", "reported"]),
@@ -35,6 +37,7 @@ export const profileInput = z
       });
   });
 export type ElderProfile = {
+  care_settings?: CareSettings | null;
   id: string;
   display_name: string;
   address: string | null;
@@ -60,7 +63,7 @@ export async function loadProfileDevice(
   let q = db()
     .from("devices")
     .select(
-      "id,person_id,assignment_id,people(id,display_name,address,allergy_status,allergies,health_conditions,contact_name,contact_phone,consent_recorded_at,consent_note)",
+      "id,person_id,assignment_id,people(id,display_name,address,allergy_status,allergies,health_conditions,contact_name,contact_phone,consent_recorded_at,consent_note,care_settings)",
     )
     .eq("id", deviceId);
   if (signal) q = q.abortSignal(signal);
@@ -87,11 +90,14 @@ export async function saveElderProfile(
   input: unknown,
 ) {
   const parsed = profileInput.parse(input);
-  const { data, error } = await db().rpc("complete_device_profile", {
-    p_device_id: deviceId,
-    p_expected_assignment_id: assignmentId,
-    p_data: parsed,
-  });
+  const { data, error } = await db().rpc(
+    parsed.care_settings ? "configure_elder_care" : "complete_device_profile",
+    {
+      p_device_id: deviceId,
+      p_expected_assignment_id: assignmentId,
+      p_data: parsed,
+    },
+  );
   if (error)
     throw new Error(
       error.code === "40001"
