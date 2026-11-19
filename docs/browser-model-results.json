@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-16T17:43:44.588Z",
+  "checkedAt": "2026-11-19T17:15:24.998Z",
   "checks": [
     "Direct SPA entry/reload, WebGL rendering, keyboard rotation, component selection, exploded view, navigation, manual fallback and 360–1440px layouts passed",
     "Unavailable WebGL shows useful error and a correctly identified 2D alternative"

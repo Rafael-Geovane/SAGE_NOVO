@@ -12,14 +12,13 @@ import {
   exportWeek,
   reportCsv,
   metricNames,
+  reportSourceName as sourceName,
   type Analysis,
 } from "../features/reports/api";
 import { WorkspaceHeader } from "../components/layout/WorkspaceHeader";
 import { Pagination } from "../components/ui/Pagination";
 import { Button } from "../components/ui/Button";
 import { State } from "../components/ui/State";
-const sourceName = (source: string) =>
-  source === "simulated" ? "Simulado" : "Dispositivo físico";
 const number = (value: number) =>
   new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(value);
 export default function Reports() {
@@ -392,9 +391,7 @@ export default function Reports() {
                       }
                     }}
                   >
-                    {busy
-                      ? "Preparando análise…"
-                      : "Gerar análise demonstrativa"}
+                    {busy ? "Preparando análise…" : "Gerar resumo por regras"}
                   </Button>
                 ) : (
                   <Link href="/planos" className="button button-primary">

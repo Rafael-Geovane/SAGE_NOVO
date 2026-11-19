@@ -1,6 +1,7 @@
 import navy from "../../../assets/sage_vest_azul_marinho.png";
 import white from "../../../assets/sage_vest_branco_gelo.png";
 import black from "../../../assets/sage_vest_preto_onix.png";
+import { prices } from "./pricing";
 export const variants = [
   { id: "navy", name: "Azul-marinho", color: "#25334c", image: navy },
   { id: "white", name: "Branco", color: "#f5f5f5", image: white },
@@ -13,7 +14,7 @@ export const product: {
   availabilityLabel: string;
 } = {
   name: "SAGE Smart Vest",
-  price: null,
+  price: prices.vest,
   commerciallyAvailable: false,
   availabilityLabel: "Em desenvolvimento",
 };

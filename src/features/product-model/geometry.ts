@@ -231,6 +231,95 @@ export function buildProduct() {
   cover.userData.componentId = "case";
   root.add(cover);
   box(cover, [0.47, 0.67, 0.08], [0, 0, 0], dark, 0.065);
+  // Rear cradle, stitched reinforcement and retaining straps (visual concept).
+  box(vest, [0.68, 0.9, 0.055], [0, 0.35, -0.44], fabricTrim, 0.06);
+  for (const x of [-0.3, 0.3]) {
+    for (let i = 0; i < 28; i++)
+      box(
+        vest,
+        [0.012, 0.015, 0.008],
+        [x, -0.05 + i * 0.03, -0.475],
+        metal,
+        0.002,
+      );
+    box(vest, [0.075, 0.76, 0.04], [x, 0.35, -0.49], dark, 0.012);
+  }
+  for (const y of [-0.07, 0.77])
+    wire(
+      vest,
+      [
+        [-0.3, y, -0.48],
+        [0, y, -0.48],
+        [0.3, y, -0.48],
+      ],
+      "#60768c",
+      0.006,
+    );
+  // Mating rim, internal ribs, screw bosses and cross-head fasteners.
+  for (const x of [-0.175, 0.175]) {
+    for (const y of [-0.265, 0.265]) {
+      const boss = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.025, 0.028, 0.08, 16),
+        dark,
+      );
+      boss.rotation.x = Math.PI / 2;
+      boss.position.set(x, y, 0.025);
+      enclosure.add(boss);
+      const head = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.018, 0.018, 0.009, 16),
+        metal,
+      );
+      head.rotation.x = Math.PI / 2;
+      head.position.set(x, y, 0.045);
+      cover.add(head);
+      box(cover, [0.025, 0.004, 0.003], [x, y, 0.051], chip, 0.001);
+      box(cover, [0.004, 0.025, 0.003], [x, y, 0.051], chip, 0.001);
+    }
+    for (let i = 0; i < 5; i++)
+      box(
+        enclosure,
+        [0.035, 0.014, 0.045],
+        [x, -0.17 + i * 0.085, 0.015],
+        dark,
+        0.003,
+      );
+  }
+  box(cover, [0.35, 0.49, 0.012], [0, 0, -0.045], fabricTrim, 0.045);
+  box(cover, [0.3, 0.12, 0.008], [0, 0.08, 0.044], fabricTrim, 0.012);
+  // Embossed circuit motif; no unconfirmed display or indicator hardware.
+  wire(
+    cover,
+    [
+      [-0.11, 0.08, 0.052],
+      [-0.055, 0.08, 0.052],
+      [-0.025, 0.12, 0.052],
+      [0.015, 0.025, 0.052],
+      [0.05, 0.08, 0.052],
+      [0.11, 0.08, 0.052],
+    ],
+    "#8ba6b8",
+    0.004,
+  );
+  for (let i = 0; i < 5; i++)
+    box(
+      cover,
+      [0.25, 0.007, 0.004],
+      [0, -0.08 - i * 0.022, 0.043],
+      fabricTrim,
+      0.002,
+    );
+  box(enclosure, [0.09, 0.045, 0.04], [0, 0.34, 0.025], chip, 0.01);
+  wire(
+    vest,
+    [
+      [0, 0.73, -0.5],
+      [0.16, 0.89, -0.46],
+      [0.4, 1.07, -0.44],
+      [0.56, 1.31, -0.3],
+    ],
+    "#29313c",
+    0.014,
+  );
   const controller = body("esp32");
   box(controller, [0.24, 0.46, 0.025], [0, 0, 0], chip);
   box(controller, [0.19, 0.2, 0.035], [0, 0.055, 0.028], metal);
@@ -324,9 +413,10 @@ export function buildProduct() {
       0.007,
     );
   }
-  const externalPosition = new THREE.Vector3(0.57, -0.64, 0.48);
+  const externalPosition = new THREE.Vector3(0, 0.35, -0.51);
   function setView(view: ProductView) {
     const exploded = view === "exploded";
+    enclosure.rotation.y = cover.rotation.y = exploded ? 0 : Math.PI;
     vest.position.set(exploded ? -1.08 : 0, 0, 0);
     enclosure.position.copy(
       exploded ? new THREE.Vector3(0.32, 0.48, 0.05) : externalPosition,
@@ -334,7 +424,7 @@ export function buildProduct() {
     cover.position.copy(
       exploded
         ? new THREE.Vector3(2.65, 0.45, 0.3)
-        : externalPosition.clone().add(new THREE.Vector3(0, 0, 0.16)),
+        : externalPosition.clone().add(new THREE.Vector3(0, 0, -0.16)),
     );
     cover.scale.setScalar(exploded ? 1.7 : 1);
     enclosure.scale.setScalar(exploded ? 1.7 : 1);

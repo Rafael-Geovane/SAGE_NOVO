@@ -86,7 +86,13 @@ export function createProductViewer(
     camera.position
       .copy(sphere.center)
       .add(
-        new THREE.Vector3(0.22, 0.08, 1).normalize().multiplyScalar(distance),
+        new THREE.Vector3(
+          view === "external" ? -0.38 : 0.22,
+          0.08,
+          view === "external" ? -1 : 1,
+        )
+          .normalize()
+          .multiplyScalar(distance),
       );
     controls.maxDistance = Math.max(25, distance * 1.5);
     controls.update();

@@ -6,6 +6,7 @@ import { useAuth } from "../features/auth/AuthProvider";
 import { currentPlan, selectPlan, type Plan } from "../features/reports/api";
 import { Button } from "../components/ui/Button";
 import { State } from "../components/ui/State";
+import { prices } from "../features/catalog/pricing";
 const plans: {
   id: Plan;
   name: string;
@@ -28,7 +29,7 @@ const plans: {
   {
     id: "plus",
     name: "Cuidado Plus",
-    price: "39",
+    price: prices.plus.toLocaleString("pt-BR", { minimumFractionDigits: 2 }),
     tag: "Mais clareza para sua rotina",
     features: [
       "Tudo do Essencial",
@@ -40,13 +41,13 @@ const plans: {
   {
     id: "premium",
     name: "SAGE Premium",
-    price: "79",
+    price: prices.premium.toLocaleString("pt-BR", { minimumFractionDigits: 2 }),
     tag: "Uma visão mais completa da semana",
     features: [
       "Tudo do Cuidado Plus",
       "Relatório semanal com IA NVIDIA exclusivo do Premium",
       "Resumo de cobertura e eventos",
-      "Dados físicos e simulados identificados",
+      "Origem dos registros identificada",
     ],
   },
 ];
@@ -145,6 +146,11 @@ export default function Plans() {
                   ? "Plano atual"
                   : `Experimentar ${item.name}`}
               </Button>
+            )}
+            {item.id !== "essential" && (
+              <Link href={`/pagamento?plano=${item.id}`} className="text-link">
+                Simular pagamento →
+              </Link>
             )}
           </article>
         ))}

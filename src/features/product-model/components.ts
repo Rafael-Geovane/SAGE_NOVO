@@ -11,7 +11,7 @@ export const productComponents = [
     name: "Caixa eletrônica removível",
     category: "Integração ilustrativa",
     description:
-      "Caixa compacta com tampa destacável e suporte no bolso. Formato, fixação e organização interna são conceituais; não representam um arquivo pronto para fabricação.",
+      "Caixa removível nas costas, com berço de fixação, reforço costurado, tampa, parafusos, nervuras internas e saída organizada de fios. Detalhes ilustrativos: encaixes e montagem ainda precisam de validação física.",
   },
   {
     id: "esp32",

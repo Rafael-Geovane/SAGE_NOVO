@@ -756,7 +756,7 @@ try {
     .getByRole("link", { name: "Relatórios", exact: true })
     .click();
   await customer
-    .getByRole("button", { name: "Gerar análise demonstrativa", exact: true })
+    .getByRole("button", { name: "Gerar resumo por regras", exact: true })
     .click();
   await customer
     .getByText("Resumo demonstrativo da semana com dados simulados.", {

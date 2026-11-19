@@ -25,6 +25,6 @@ it("exports only the provided report with source and valid sample counts", () =>
     ],
   } as WeeklyReport;
   expect(reportCsv(report)).toContain("Temperatura (°C)");
-  expect(reportCsv(report)).toContain('"simulated"');
+  expect(reportCsv(report)).toContain('"Demonstração acadêmica"');
   expect(reportCsv(report)).toContain('"2";"36.5"');
 });

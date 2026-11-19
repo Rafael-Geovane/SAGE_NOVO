@@ -1,5 +1,11 @@
 import { db } from "../../lib/supabase";
 export type Plan = "essential" | "plus" | "premium";
+export const reportSourceName = (source: string) =>
+  source === "simulated"
+    ? "Demonstração acadêmica"
+    : source === "device"
+      ? "Dispositivo físico"
+      : "Origem não informada";
 export async function currentPlan(): Promise<Plan> {
   const { data, error } = await db()
     .from("demo_subscriptions")
@@ -172,7 +178,7 @@ export function reportCsv(report: WeeklyReport) {
         report.device_code,
         report.start,
         report.end,
-        m.source,
+        reportSourceName(m.source),
         metricNames[m.metric] ?? m.metric,
         m.samples,
         m.mean,

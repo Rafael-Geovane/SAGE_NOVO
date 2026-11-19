@@ -19,6 +19,7 @@ import VestControls from "./pages/VestControls";
 import Plans from "./pages/Plans";
 import Reports from "./pages/Reports";
 import Model from "./pages/Model";
+import Payment from "./pages/Payment";
 class ErrorBoundary extends Component<
   { children: ReactNode },
   { failed: boolean }
@@ -48,6 +49,7 @@ function Routes() {
       "/modelo": "Modelo 3D",
       "/como-funciona": "Como funciona",
       "/carrinho": "Sua intenção",
+      "/pagamento": "Pagamento demonstrativo",
       "/auth": "Sua conta",
       "/dashboard": "Acompanhamento",
       "/minha-conta": "Minha conta",
@@ -68,6 +70,7 @@ function Routes() {
       <Route path="/modelo" component={Model} />
       <Route path="/como-funciona" component={HowItWorks} />
       <Route path="/carrinho" component={Cart} />
+      <Route path="/pagamento" component={Payment} />
       <Route path="/auth" component={Auth} />
       <Route path="/teste-colete" component={VestTest} />
       <Route path="/planos" component={Plans} />

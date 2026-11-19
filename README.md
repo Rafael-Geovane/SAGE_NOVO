@@ -50,6 +50,7 @@ Para abrir localmente, acrescente a rota a `http://localhost:3000`.
 | `/modelo`        | Visualizador 3D conceitual                                     | Público       |
 | `/como-funciona` | Como funciona                                                  | Público       |
 | `/carrinho`      | Carrinho de intenção                                           | Público       |
+| `/pagamento`     | Simulação de Pix ou cartão fictício                            | Público       |
 | `/auth`          | Login, cadastro e recuperação de acesso                        | Público       |
 | `/planos`        | Planos demonstrativos                                          | Público       |
 | `/teste-colete`  | Simulador local do SGE-001, sem gravação no banco              | Público       |
@@ -82,6 +83,17 @@ npm test
 npm run build
 npm run check:client
 ```
+
+## Pagamento demonstrativo
+
+A rota pública `/pagamento` simula Pix e cartão fictício, com aprovação ou
+recusa selecionável para apresentação. Há acesso pelo carrinho e pelos planos.
+Use `?plano=vest`, `?plano=plus` ou `?plano=premium` para iniciar a seleção.
+Todos os valores são ilustrativos: R$ 800,00 por colete, R$ 99,90 no Plus e
+R$ 149,90 no Premium. A configuração compartilhada fica em
+`src/features/catalog/pricing.ts`.
+Não há gateway, cobrança, coleta de cartão, criação de pedido ou alteração de
+plano. Os benefícios demonstrativos continuam sendo ativados em `/planos`.
 
 ## Configurar Supabase
 
@@ -166,7 +178,10 @@ As cores descrevem os arquivos visuais existentes, não disponibilidade comercia
 
 O carrinho guarda somente variante e quantidade no navegador. Ao continuar, a pessoa entra na conta e revisa uma mensagem de interesse antes de enviá-la ao suporte interno. Mensagens são persistidas no Supabase, com chaves idempotentes para repetição. Não há integração de envio por e-mail, telefone ou aplicativos externos.
 
-Configuração comercial fica em `src/features/catalog/product.ts`: `price` em reais permanece null e `availabilityLabel` informa o desenvolvimento. Só preencha dados confirmados pela equipe. Alterar essas informações não habilita pagamento ou reserva de estoque.
+Os preços da apresentação ficam em `src/features/catalog/pricing.ts` e são
+compartilhados pela loja, pelos planos e pelo pagamento demonstrativo. A
+disponibilidade do protótipo continua em `src/features/catalog/product.ts`.
+Alterar esses valores não habilita cobrança ou reserva de estoque.
 
 O SAGE não faz diagnóstico e não substitui profissionais de saúde ou serviços de emergência. Limiares clínicos, sensores definitivos e firmware não estão confirmados. O endereço é informado no cadastro; não há rastreamento GPS.
 

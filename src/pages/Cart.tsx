@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, ShoppingBag, Trash2 } from "lucide-react";
 import { getCart, setCart } from "../features/catalog/cart";
-import { variants } from "../features/catalog/product";
+import { variants, product } from "../features/catalog/product";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../features/auth/AuthProvider";
 export default function Cart() {
@@ -30,7 +30,11 @@ export default function Cart() {
                       {v.name} · Quantidade: {item.quantity}
                     </p>
                     <span className="badge">
-                      Condições comerciais a definir
+                      {product.price?.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      })}{" "}
+                      por unidade
                     </span>
                   </div>
                   <Button
@@ -64,6 +68,11 @@ export default function Cart() {
             >
               Continuar para contato <ArrowRight size={17} />
             </Link>
+            <p>
+              <Link className="text-link" href="/pagamento?plano=vest">
+                Simular pagamento para apresentação →
+              </Link>
+            </p>
           </div>
         </>
       ) : (
