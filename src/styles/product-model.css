@@ -72,9 +72,22 @@
   align-items: center;
   padding: 22px 24px 0;
 }
-.product-stage-top > span:last-child {
-  font-size: 11px;
-  color: var(--muted);
+.assembly-caption {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 12px;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  border-radius: 8px;
+  background: var(--surface, white);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+  text-align: center;
+  pointer-events: none;
 }
 .product-canvas-shell {
   height: 540px;
@@ -327,11 +340,6 @@
     justify-content: center;
     padding: 10px;
     font-size: 12px;
-  }
-  .product-stage-top {
-    align-items: start;
-    flex-direction: column;
-    gap: 7px;
   }
   .product-canvas-shell {
     height: 430px;

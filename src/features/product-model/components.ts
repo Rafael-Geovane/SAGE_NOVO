@@ -11,7 +11,7 @@ export const productComponents = [
     name: "Caixa eletrônica removível",
     category: "Integração ilustrativa",
     description:
-      "Caixa removível nas costas, com berço de fixação, reforço costurado, tampa, parafusos, nervuras internas e saída organizada de fios. Detalhes ilustrativos: encaixes e montagem ainda precisam de validação física.",
+      "Caixa removível fixada na parte externa das costas, com a tampa voltada para fora. O ESP32 se apoia em quatro suportes, ao lado da bateria e do módulo de carga.",
   },
   {
     id: "esp32",
@@ -64,7 +64,8 @@ export const productComponents = [
   },
 ] as const;
 export type ComponentId = (typeof productComponents)[number]["id"];
-export type ProductView = "external" | "exploded";
+export type ProductView = "external" | "exploded" | "assembly";
+export type Playback = "playing" | "paused" | "done";
 export type ViewerAction =
   "left" | "right" | "up" | "down" | "zoom-in" | "zoom-out" | "reset";
 export const conceptualNotice =

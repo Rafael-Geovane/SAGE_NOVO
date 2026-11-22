@@ -57,9 +57,15 @@ try {
   await page
     .getByRole("button", { name: /Caixa eletrônica removível/ })
     .click();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Vista explodida", exact: true })
+      .getAttribute("aria-pressed"),
+    "true",
+  );
   const canvasSize = await canvas.boundingBox();
   await canvas.click({
-    position: { x: canvasSize.width * 0.45, y: canvasSize.height * 0.63 },
+    position: { x: canvasSize.width * 0.25, y: canvasSize.height * 0.6 },
   });
   assert.equal(
     await page
@@ -86,6 +92,29 @@ try {
     path: "docs/screenshots/model-exploded-desktop.png",
     fullPage: true,
   });
+  await page.getByRole("button", { name: "Simular", exact: true }).click();
+  await page.getByRole("button", { name: "Pausar", exact: true }).click();
+  const paused = await canvas.screenshot();
+  assert.ok(paused.equals(await canvas.screenshot()));
+  await page.getByRole("button", { name: "Continuar", exact: true }).click();
+  await page
+    .getByText("Montagem concluída", { exact: true })
+    .waitFor({ timeout: 45000 });
+  assert.ok(!paused.equals(await canvas.screenshot()));
+  await page.getByRole("button", { name: "Repetir", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Vista externa", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Simular", exact: true }).waitFor();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.getByRole("button", { name: "Simular", exact: true }).click();
+  await page.getByText("Montagem concluída", { exact: true }).waitFor();
+  await page
+    .getByRole("button", { name: "Vista explodida", exact: true })
+    .click();
+  checks.push(
+    "Assembly playback, pause, completion, replay, view switching and reduced motion passed",
+  );
   for (const width of [360, 390, 768, 900, 1024, 1440]) {
     await page.setViewportSize({ width, height: 950 });
     assert.equal(

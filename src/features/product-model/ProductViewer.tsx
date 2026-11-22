@@ -9,15 +9,30 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowDown,
+  Play,
+  Pause,
 } from "lucide-react";
-import type { ComponentId, ProductView, ViewerAction } from "./components";
+import type {
+  ComponentId,
+  Playback,
+  ProductView,
+  ViewerAction,
+} from "./components";
 import type { ProductViewer as Viewer } from "./scene";
 type Props = {
   view: ProductView;
   selected: ComponentId;
   onSelect: (id: ComponentId) => void;
+  onSimulate: () => void;
+  onExitAssembly: () => void;
 };
-export default function ProductViewer({ view, selected, onSelect }: Props) {
+export default function ProductViewer({
+  view,
+  selected,
+  onSelect,
+  onSimulate,
+  onExitAssembly,
+}: Props) {
   const host = useRef<HTMLDivElement>(null),
     viewer = useRef<Viewer | null>(null);
   const latest = useRef({ view, selected, onSelect });
@@ -27,6 +42,16 @@ export default function ProductViewer({ view, selected, onSelect }: Props) {
   );
   const [attempt, setAttempt] = useState(0),
     [alternative, setAlternative] = useState(false);
+  const [playback, setPlayback] = useState<Playback>("done");
+  const [caption, setCaption] = useState("");
+  const simulating = view === "assembly";
+  const simulationLabel = !simulating
+    ? "Simular"
+    : playback === "playing"
+      ? "Pausar"
+      : playback === "paused"
+        ? "Continuar"
+        : "Repetir";
   useEffect(() => {
     if (alternative) return;
     let cancelled = false;
@@ -40,6 +65,12 @@ export default function ProductViewer({ view, selected, onSelect }: Props) {
           (id) => latest.current.onSelect(id),
           () => {
             if (!cancelled) setStatus("failed");
+          },
+          (state, text) => {
+            if (!cancelled) {
+              setPlayback(state);
+              setCaption(text);
+            }
           },
         );
         viewer.current = instance;
@@ -72,9 +103,26 @@ export default function ProductViewer({ view, selected, onSelect }: Props) {
     <div className="product-stage">
       <div className="product-stage-top">
         <span className="badge">
-          {view === "external" ? "01 · VISTA EXTERNA" : "02 · VISTA EXPLODIDA"}
+          {simulating
+            ? "MONTAGEM INTERNA"
+            : view === "external"
+              ? "01 · VISTA EXTERNA"
+              : "02 · VISTA EXPLODIDA"}
         </span>
-        <span>Protótipo conceitual</span>
+        <Button
+          size="sm"
+          disabled={alternative || status !== "ready"}
+          onClick={() =>
+            simulating ? viewer.current?.togglePlayback() : onSimulate()
+          }
+        >
+          {simulating && playback === "playing" ? (
+            <Pause size={16} />
+          ) : (
+            <Play size={16} />
+          )}
+          {simulationLabel}
+        </Button>
       </div>
       <div className="product-canvas-shell">
         {!alternative && (
@@ -89,6 +137,11 @@ export default function ProductViewer({ view, selected, onSelect }: Props) {
             <LoaderCircle className="spin" size={24} />
             <span>Preparando o modelo 3D…</span>
           </div>
+        )}
+        {simulating && !alternative && status === "ready" && (
+          <p className="assembly-caption" role="status">
+            {caption}
+          </p>
         )}
         {(alternative || status === "failed") && (
           <figure className="product-fallback">
@@ -141,7 +194,10 @@ export default function ProductViewer({ view, selected, onSelect }: Props) {
       <div className="product-alternative-actions">
         <button
           className="text-link"
-          onClick={() => setAlternative(!alternative)}
+          onClick={() => {
+            if (simulating) onExitAssembly();
+            setAlternative(!alternative);
+          }}
         >
           {alternative ? "Voltar ao modelo 3D" : "Ver alternativa em imagens"}
         </button>

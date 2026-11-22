@@ -14,7 +14,8 @@ export default function Model() {
   const component = productComponents.find((item) => item.id === selected)!;
   const select = (id: ComponentId) => {
     setSelected(id);
-    if (id !== "vest" && id !== "case") setView("exploded");
+    if (id !== "vest") setView("exploded");
+    else if (view === "assembly") setView("external");
   };
   return (
     <div className="model-page container">
@@ -55,7 +56,16 @@ export default function Model() {
         </button>
       </div>
       <div className="model-explorer">
-        <ProductViewer view={view} selected={selected} onSelect={select} />
+        <ProductViewer
+          view={view}
+          selected={selected}
+          onSelect={select}
+          onSimulate={() => {
+            setSelected("vest");
+            setView("assembly");
+          }}
+          onExitAssembly={() => setView("exploded")}
+        />
         <aside
           className="model-inspector"
           aria-labelledby="model-components-title"

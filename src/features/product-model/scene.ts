@@ -1,11 +1,17 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { buildProduct } from "./geometry";
-import type { ComponentId, ProductView, ViewerAction } from "./components";
+import type {
+  ComponentId,
+  Playback,
+  ProductView,
+  ViewerAction,
+} from "./components";
 export function createProductViewer(
   host: HTMLDivElement,
   onSelect: (id: ComponentId) => void,
   onFailure: () => void,
+  onPlayback: (state: Playback, caption: string) => void,
 ) {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("webgl2", {
@@ -55,8 +61,9 @@ export function createProductViewer(
     disposed = false;
   const render = () => {
     if (!disposed) {
-      selection.setFromObject(product.parts.get(selected)!);
-      selection.visible = selected !== "vest";
+      selection.visible = selected !== "vest" && view !== "assembly";
+      if (selection.visible)
+        selection.setFromObject(product.parts.get(selected)!);
       renderer.render(scene, camera);
     }
   };
@@ -87,9 +94,9 @@ export function createProductViewer(
       .copy(sphere.center)
       .add(
         new THREE.Vector3(
-          view === "external" ? -0.38 : 0.22,
+          view === "external" ? 0.46 : 0.22,
           0.08,
-          view === "external" ? -1 : 1,
+          view === "assembly" && elapsed >= duration ? -1 : 1,
         )
           .normalize()
           .multiplyScalar(distance),
@@ -109,6 +116,68 @@ export function createProductViewer(
   const observer = new ResizeObserver(resize);
   observer.observe(host);
   controls.addEventListener("change", render);
+  let frame = 0,
+    elapsed = 0,
+    lastTime = 0;
+  let playback: Playback = "done",
+    caption = "";
+  const assemblyDuration = 11000;
+  const duration = assemblyDuration + 1000;
+  function cancelFrame() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+  }
+  function tick(now: number) {
+    elapsed += Math.min(180, Math.max(0, now - lastTime));
+    lastTime = now;
+    const t = Math.min(1, elapsed / assemblyDuration);
+    const exterior = THREE.MathUtils.smoothstep(
+      elapsed,
+      assemblyDuration,
+      duration,
+    );
+    product.assembly.setExterior(exterior);
+    product.assembly.pose(t);
+    const nextCaption =
+      t < 0.33
+        ? "Sensores no forro do colete"
+        : t < 0.665
+          ? "Bateria, ESP32 e módulo de carga na caixa"
+          : t < 0.8
+            ? "Fechamento da tampa"
+            : t < 1
+              ? "Fixação da caixa por fora das costas"
+              : exterior < 1
+                ? "Vista externa do colete"
+                : "Montagem concluída";
+    if (exterior === 1) playback = "done";
+    if (caption !== nextCaption) {
+      caption = nextCaption;
+      onPlayback(playback, caption);
+    }
+    if (exterior < 1) {
+      render();
+      frame = requestAnimationFrame(tick);
+    } else {
+      frame = 0;
+      reset();
+    }
+  }
+  function play() {
+    cancelFrame();
+    if (playback === "done") {
+      elapsed = 0;
+      product.assembly.setExterior(0);
+      product.assembly.pose(0);
+      reset();
+    }
+    playback = "playing";
+    caption = "";
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      elapsed = duration;
+    lastTime = performance.now();
+    tick(lastTime);
+  }
   function act(action: ViewerAction) {
     if (action === "reset") {
       reset();
@@ -177,7 +246,7 @@ export function createProductViewer(
       (-(event.clientY - bounds.top) / bounds.height) * 2 + 1,
     );
     raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObject(product.root, true).find((hit) => {
+    const hits = raycaster.intersectObject(product.root, true).filter((hit) => {
       let p: THREE.Object3D | null = hit.object;
       while (p) {
         if (!p.visible) return false;
@@ -185,6 +254,13 @@ export function createProductViewer(
       }
       return true;
     });
+    const hit =
+      view === "assembly"
+        ? hits.find(
+            ({ object }) =>
+              object instanceof THREE.Mesh && !object.material.transparent,
+          )
+        : hits[0];
     let object: THREE.Object3D | null = hit?.object ?? null;
     while (object && !object.userData.componentId) object = object.parent;
     if (object?.userData.componentId) onSelect(object.userData.componentId);
@@ -193,23 +269,42 @@ export function createProductViewer(
   canvas.addEventListener("pointerup", pointerup);
   const lost = (event: Event) => {
     event.preventDefault();
+    cancelFrame();
     onFailure();
   };
   canvas.addEventListener("webglcontextlost", lost);
   resize();
   return {
     act,
+    togglePlayback() {
+      if (view !== "assembly") return;
+      if (playback === "playing") {
+        cancelFrame();
+        playback = "paused";
+        onPlayback(playback, caption);
+      } else play();
+    },
     update(nextView: ProductView, nextSelected: ComponentId) {
       const changed = view !== nextView;
       view = nextView;
       selected = nextSelected;
-      product.setView(view);
+      if (changed) {
+        cancelFrame();
+        playback = "done";
+        product.setView(view);
+        if (view === "assembly") {
+          play();
+          return;
+        }
+      }
       product.root.updateMatrixWorld(true);
       if (changed) reset();
       else render();
     },
     dispose() {
       disposed = true;
+      cancelFrame();
+      product.assembly.dispose();
       observer.disconnect();
       controls.dispose();
       canvas.removeEventListener("keydown", keydown);
@@ -220,6 +315,7 @@ export function createProductViewer(
         materials = new Set<THREE.Material>(),
         textures = new Set<THREE.Texture>();
       scene.traverse((object) => {
+        if (object instanceof THREE.InstancedMesh) object.dispose();
         if (
           object instanceof THREE.Mesh ||
           object instanceof THREE.LineSegments
