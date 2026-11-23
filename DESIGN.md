@@ -44,6 +44,11 @@ components:
 
 # SAGE design context
 
+Logout (23/11/2026): `SignOutButton` is the shared action in the global
+navigation and workspace header. Use the label “Sair da conta”. Mobile keeps
+the global action in the expanded navigation. Reuse AuthProvider.signOut for
+session and sensitive-cache cleanup, then show `/auth`.
+
 Product explorer (16/11/2026): public `/modelo` preserves SAGE blue/graphite
 and uses on-demand Three.js geometry. External and exploded views have native
 buttons, keyboard camera controls and an accessible component list. Only the

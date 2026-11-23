@@ -12,6 +12,7 @@ import { useAuth } from "../../features/auth/AuthProvider";
 import { NotificationCenter } from "../../features/notifications/NotificationCenter";
 import { BrowserNotifications } from "../../features/notifications/BrowserNotifications";
 import { WorkspaceSidebar } from "./WorkspaceSidebar";
+import { SignOutButton } from "../../features/auth/SignOutButton";
 export function Logo() {
   return (
     <Link href="/" className="logo" aria-label="SAGE — início">
@@ -72,6 +73,10 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             >
               Modelo 3D
             </Link>
+            <SignOutButton
+              className="nav-sign-out"
+              onExit={() => setOpen(false)}
+            />
           </nav>
           <div className="nav-actions">
             <NotificationCenter />

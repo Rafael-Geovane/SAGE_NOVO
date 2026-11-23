@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
-import { ScanLine, LogOut } from "lucide-react";
+import { ScanLine } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ConnectDevice } from "../../features/devices/ConnectDevice";
 import { useAuth } from "../../features/auth/AuthProvider";
 import { Button } from "../ui/Button";
+import { SignOutButton } from "../../features/auth/SignOutButton";
 export function WorkspaceHeader({
   title,
   description,
@@ -23,15 +24,7 @@ export function WorkspaceHeader({
           <p>{description}</p>
         </div>
         <div className="workspace-actions">
-          <Button
-            data-navigate
-            variant="outline"
-            size="sm"
-            onClick={() => void a.signOut()}
-          >
-            <LogOut size={15} />
-            Sair
-          </Button>
+          <SignOutButton />
         </div>
       </div>
       <nav className="workspace-tabs" aria-label="Área da conta">

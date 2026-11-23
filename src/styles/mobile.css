@@ -1,4 +1,14 @@
 /* Small screens are the baseline; widen layouts progressively. */
+.nav-sign-out {
+  min-height: 44px;
+  white-space: nowrap;
+}
+@media (max-width: 800px) {
+  .public-nav .nav-sign-out {
+    width: 100%;
+    margin-top: 12px;
+  }
+}
 .care-required {
   margin-block: 24px;
   padding: 20px;

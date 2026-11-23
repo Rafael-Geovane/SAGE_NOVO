@@ -219,12 +219,18 @@ try {
     await page.getByLabel("Sua mensagem").inputValue(),
     "Rascunho de teste",
   );
-  await page.getByRole("button", { name: "Sair", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Sair da conta", exact: true })
+    .first()
+    .click();
   await page.getByRole("dialog").waitFor();
   await page.getByRole("button", { name: "Continuar escrevendo" }).click();
   await page.getByRole("button", { name: "Descartar rascunho" }).click();
   checks.push("Unsaved-message navigation uses accessible confirmation");
-  await page.getByRole("button", { name: "Sair", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Sair da conta", exact: true })
+    .first()
+    .click();
   await page.getByText("Entre para continuar").waitFor();
   role = "admin";
   await login();

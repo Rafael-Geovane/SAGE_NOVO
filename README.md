@@ -86,6 +86,16 @@ npm run check:client
 
 ## Cadastro e faixas individuais
 
+Coletes de apresentação: **SGE-005** e **SGE-006**. Estão habilitados para
+`/teste_colete`, sem dependência de ESP32 e sem pessoa cadastrada previamente.
+Na conta autorizada, use **Adicionar colete** no dashboard, informe um desses
+códigos e complete o cadastro obrigatório do idoso. Em `/teste_colete`, digite
+o mesmo código e clique em **Carregar colete**. Os cenários contínuos permanecem
+selecionados até desmarcar; queda e evento de teste são envios únicos.
+O provisionamento administrativo reproduzível está em
+`supabase/provision-presentation-vests.sql`. Acesso segue as permissões existentes
+do administrador e da conta cuidadora de apresentação do SGE-067.
+
 O cadastro do idoso requer data de nascimento, peso, altura, medicamentos,
 condições informadas e autorização. Registre explicitamente quando não há
 medicamentos ou condições conhecidos. Perfis anteriores aparecem como pendentes
