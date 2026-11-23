@@ -87,6 +87,10 @@ npm run check:client
 ## Cadastro e faixas individuais
 
 Coletes de apresentação: **SGE-005** e **SGE-006**. Estão habilitados para
+cadastro sem código de ativação, mediante login. A primeira conta que reivindicar
+um colete ainda não configurado fica responsável por ele; outras contas não
+recebem acesso aos dados cadastrados apenas por saber o código impresso.
+Os demais coletes mantêm o fluxo de ativação. Estão habilitados para
 `/teste_colete`, sem dependência de ESP32 e sem pessoa cadastrada previamente.
 Na conta autorizada, use **Adicionar colete** no dashboard, informe um desses
 códigos e complete o cadastro obrigatório do idoso. Em `/teste_colete`, digite

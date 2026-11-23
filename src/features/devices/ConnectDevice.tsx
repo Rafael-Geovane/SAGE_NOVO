@@ -13,7 +13,12 @@ import { State } from "../../components/ui/State";
 import { connectDevice, pairingInput } from "./pairing";
 import { addDeviceByCode } from "./registration";
 import { ElderProfileForm } from "../people/ElderProfileForm";
-import { lookupConnectedDevice, type DeviceConnection } from "./managed";
+import {
+  lookupConnectedDevice,
+  claimPresentationDevice,
+  isPresentationDevice,
+  type DeviceConnection,
+} from "./managed";
 
 type Connection = DeviceConnection;
 export function ConnectDevice({
@@ -116,7 +121,9 @@ function ConnectionForm({
     if (busy) return;
     const form = event.currentTarget;
     const schema =
-      mode === "register" || !needsActivation
+      mode === "register" ||
+      !needsActivation ||
+      isPresentationDevice(pairingInput.shape.code.safeParse(code).data ?? "")
         ? pairingInput.pick({ code: true })
         : pairingInput;
     const parsed = schema.safeParse({ code, activationCode });
@@ -136,7 +143,9 @@ function ConnectionForm({
       if (mode === "register")
         connection = await addDeviceByCode(parsed.data.code);
       else {
-        connection = await lookupConnectedDevice(parsed.data.code);
+        connection = isPresentationDevice(parsed.data.code)
+          ? await claimPresentationDevice(parsed.data.code)
+          : await lookupConnectedDevice(parsed.data.code);
         if (!connection) {
           if (!needsActivation) {
             setNeedsActivation(true);

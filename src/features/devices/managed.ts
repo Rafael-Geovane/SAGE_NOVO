@@ -8,6 +8,33 @@ export type DeviceConnection = {
   page: number;
   configureProfile?: boolean;
 };
+export const isPresentationDevice = (code: string) =>
+  code === "SGE-005" || code === "SGE-006";
+export async function claimPresentationDevice(
+  code: string,
+): Promise<DeviceConnection> {
+  const { data, error } = await db().rpc("claim_presentation_device", {
+    p_code: pairingInput.shape.code.parse(code),
+  });
+  if (error)
+    throw new Error(
+      "Este colete de apresentação já foi vinculado a outra conta ou está indisponível. Use a conta responsável ou solicite ajuda ao administrador.",
+    );
+  const parsed = z
+    .object({
+      device_id: z.uuid(),
+      page: z.number().int().nonnegative(),
+      configure_profile: z.boolean(),
+    })
+    .safeParse(data);
+  if (!parsed.success)
+    throw new Error("Não foi possível confirmar o vínculo do colete.");
+  return {
+    deviceId: parsed.data.device_id,
+    page: parsed.data.page,
+    configureProfile: parsed.data.configure_profile,
+  };
+}
 export async function lookupConnectedDevice(
   code: string,
 ): Promise<DeviceConnection | null> {

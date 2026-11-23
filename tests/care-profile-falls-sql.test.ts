@@ -307,3 +307,33 @@ it("persists individual care atomically and refuses unreferenced ranges and unau
     ).rows[0].care_settings.heart_rate_bpm.min,
   ).toBe(60);
 });
+
+it("claims only unconfigured presentation vests without activation and prevents takeover", async () => {
+  await pg.exec(
+    "insert into public.devices(code,telemetry_source,requires_esp) values('SGE-005','simulated',false),('SGE-006','simulated',false)",
+  );
+  const claim = (code: string, user = outsider, role = "authenticated") =>
+    asUser(
+      user,
+      "select public.claim_presentation_device($1) result",
+      [code],
+      role,
+    );
+  await expect(claim("SGE-005", outsider, "anon")).rejects.toThrow();
+  await expect(claim("SGE-001")).rejects.toThrow();
+  const first = await claim("SGE-005");
+  expect(
+    (first.rows[0].result as { configure_profile: boolean }).configure_profile,
+  ).toBe(true);
+  await claim("SGE-005");
+  await expect(claim("SGE-005", caregiver)).rejects.toThrow();
+  await claim("SGE-006", caregiver);
+  await expect(claim("SGE-006")).rejects.toThrow();
+  const vestId = (first.rows[0].result as { device_id: string }).device_id;
+  const managed = await asUser(
+    outsider,
+    "select public.can_manage_device_profile($1) ok",
+    [vestId],
+  );
+  expect(managed.rows[0].ok).toBe(true);
+});
